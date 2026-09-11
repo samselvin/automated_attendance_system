@@ -55,15 +55,17 @@ const SECTIONS: { title: string; items: { href: string; label: string }[] }[] = 
   },
 ];
 
-export function AdminSidebar({ showAuditLogs = false }: { showAuditLogs?: boolean }) {
+const COLLEGE_WIDE_SECTION = {
+  title: "System",
+  items: [
+    { href: "/admin/settings", label: "Settings" },
+    { href: "/admin/audit-logs", label: "Audit Logs" },
+  ],
+};
+
+export function AdminSidebar({ showCollegeWideAdminLinks = false }: { showCollegeWideAdminLinks?: boolean }) {
   const pathname = usePathname();
-  const sections = showAuditLogs
-    ? SECTIONS.map((section) =>
-        section.title === "Reports"
-          ? { ...section, items: [...section.items, { href: "/admin/audit-logs", label: "Audit Logs" }] }
-          : section
-      )
-    : SECTIONS;
+  const sections = showCollegeWideAdminLinks ? [...SECTIONS, COLLEGE_WIDE_SECTION] : SECTIONS;
 
   return (
     <nav className="hidden w-60 shrink-0 overflow-y-auto border-r border-slate-200 bg-white p-4 md:block">

@@ -23,10 +23,15 @@ const LINKS = [
   ["/admin/reports", "Reports & Export"],
 ] as const;
 
-export function AdminMobileNav({ showAuditLogs = false }: { showAuditLogs?: boolean }) {
+const COLLEGE_WIDE_LINKS = [
+  ["/admin/settings", "Settings"],
+  ["/admin/audit-logs", "Audit Logs"],
+] as const;
+
+export function AdminMobileNav({ showCollegeWideAdminLinks = false }: { showCollegeWideAdminLinks?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
-  const links = showAuditLogs ? [...LINKS, ["/admin/audit-logs", "Audit Logs"] as const] : LINKS;
+  const links = showCollegeWideAdminLinks ? [...LINKS, ...COLLEGE_WIDE_LINKS] : LINKS;
 
   return (
     <div className="border-b border-slate-200 bg-white p-2 md:hidden">

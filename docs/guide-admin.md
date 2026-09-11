@@ -51,8 +51,8 @@ Do these once, roughly in this order (later steps depend on earlier ones):
     declared holiday automatically cancels that day's sessions.
 
 Attendance thresholds, Leave/OD counting rules, the daily attendance
-cutoff, and a few other college-wide rules are stored as system settings
-but **don't yet have an Admin screen** — see "Known gap" below.
+cutoff, and a few other college-wide rules can be changed any time from
+**Settings** (`/admin/settings`, college-wide Admin only) — see below.
 
 ## Day to day
 
@@ -72,19 +72,19 @@ but **don't yet have an Admin screen** — see "Known gap" below.
   entries can span every department and don't carry a reliable
   per-department tag. Filter by action, entity type, or date range;
   nothing here can ever be edited or deleted, by anyone, through the app.
+- **Settings** (`/admin/settings`) — also **college-wide Admin only**,
+  since these rules apply to the whole college with no per-department
+  override. Grouped into Attendance, Leave & On-Duty, Marks, and SMS;
+  each row saves independently, and every change is written to the audit
+  log as `SETTINGS_CHANGED` with both the old and new value. A few rows
+  under "Reserved (not yet wired into behavior)" are seeded but not
+  currently read by any business logic — they're shown (and labelled)
+  rather than hidden, but changing one won't change how the app behaves
+  yet.
 
 ## A department-scoped Admin
 
 If your Admin role is scoped to one department (set up by a college-wide
 Admin), every screen above is automatically limited to that department's
 data — you won't see other departments' students, teachers, or
-timetables, and you won't see the Audit Logs link at all.
-
-## Known gap
-
-Attendance thresholds (default Safe ≥ 80%, Warning 75–79.99%), the
-Leave/OD counting rules, the daily attendance cutoff time, and similar
-`SystemSetting` rows have no dedicated Admin screen yet — they can only be
-changed by opening `npm run db:studio` and editing the `system_settings`
-table directly. The values themselves are fully configurable (nothing is
-hard-coded in application logic), just not yet through a form.
+timetables, and you won't see the Audit Logs or Settings links at all.

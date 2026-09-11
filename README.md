@@ -105,8 +105,8 @@ This is being built phase by phase (see the master prompt, Section 54):
       UI or CRUD yet; a few nice-to-haves like an inline timetable-entry
       editor and a dedicated day-order calendar view.
 - [x] **Phase 8 (test pass, security/performance review, PWA polish and
-      deployment groundwork — a settings UI and an automated e2e suite are
-      the two pieces still open, see below)**. **Testing**: full
+      deployment groundwork — an automated e2e suite is the one piece
+      still open, see below)**. **Testing**: full
       `tsc`/`eslint`/`vitest`/`build` pass is clean (127 unit tests, up
       from 120 at Phase 7); see `docs/testing.md` for what's automated and
       what's still manual-only. **Security**: standard security headers
@@ -137,17 +137,24 @@ This is being built phase by phase (see the master prompt, Section 54):
       and `docs/setup-file-storage.md` cover every external credential;
       `docs/guide-admin.md`, `docs/guide-teacher.md` and `docs/guide-student.md`
       are the Section 55 user guides; `docs/pending-credentials.md` is the
-      single list of everything still waiting on a credential. A **Reset
-      password** button on the Teachers and Students list pages (calling
-      the existing `POST /api/admin/users/:id/reset-password` endpoint,
-      confirmed and audit-logged the same way as password reset always
-      was) was added after Phase 8 closed out.
-      **Not yet built**: an Admin screen for the college-wide
-      `SystemSetting` rows (thresholds, cutoff time, Leave/OD counting —
-      all genuinely configurable today, just via `db:studio` rather than a
-      form; see `docs/guide-admin.md`); an automated integration/e2e test
-      suite (Section 51 — every phase's end-to-end verification so far has
-      been manual, see `docs/testing.md`); Leave/OD document upload
+      single list of everything still waiting on a credential. Two things
+      were added after Phase 8 closed out: a **Reset password** button on
+      the Teachers and Students list pages (calling the existing
+      `POST /api/admin/users/:id/reset-password` endpoint, confirmed and
+      audit-logged the same way as password reset always was), and an
+      Admin **Settings** screen (`/admin/settings`, college-wide Admin
+      only, same reasoning as Audit Logs — these rules have no
+      per-department scope) editing every `SystemSetting` row this app
+      actually reads, grouped by area (Attendance, Leave & On-Duty,
+      Marks, SMS), with the rows that are seeded but not yet consulted by
+      any business logic (`TIMEZONE`, `TIMETABLE_TYPE`,
+      `LEAVE_APPROVAL_MODE`, `OD_APPROVAL_MODE`, `PARENT_SMS_LANGUAGE`)
+      clearly labelled "Not used yet" rather than hidden. Every save is
+      validated against a per-setting schema (`src/lib/settings-schema.ts`)
+      and audit-logged as `SETTINGS_CHANGED` with the old and new value.
+      **Not yet built**: an automated integration/e2e test suite
+      (Section 51 — every phase's end-to-end verification so far has been
+      manual, see `docs/testing.md`); Leave/OD document upload
       (schema-ready, no upload route/UI — see `docs/setup-file-storage.md`).
 
 ## Documentation

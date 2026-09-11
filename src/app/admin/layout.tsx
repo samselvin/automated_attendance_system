@@ -10,8 +10,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 md:flex-row">
-      <AdminMobileNav showAuditLogs={isCollegeWideAdmin} />
-      <AdminSidebar showAuditLogs={isCollegeWideAdmin} />
+      <AdminMobileNav showCollegeWideAdminLinks={isCollegeWideAdmin} />
+      <AdminSidebar showCollegeWideAdminLinks={isCollegeWideAdmin} />
       <div className="min-w-0 flex-1">{children}</div>
     </div>
   );

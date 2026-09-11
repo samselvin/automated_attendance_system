@@ -7,7 +7,7 @@ npm test          # run once
 npm run test:watch
 ```
 
-124 Vitest tests cover every pure calculation module — the parts of the
+135 Vitest tests cover every pure calculation module — the parts of the
 system where a subtle bug is easiest to introduce silently and hardest to
 notice by eye:
 
@@ -30,6 +30,8 @@ notice by eye:
   lockout state transitions, password hashing/verification
 - `src/lib/rbac.test.ts` — role/department-scope matching
 - `src/lib/rate-limit.test.ts` — the sliding-window rate limiter (Phase 8)
+- `src/lib/settings-schema.test.ts` — per-setting validation, and that every
+  setting's own fallback value satisfies its own schema
 - `src/lib/env.test.ts`, `src/lib/time.test.ts`, `src/lib/import/validators.test.ts`
 
 Run `npm test` before every commit that touches any of these modules —
