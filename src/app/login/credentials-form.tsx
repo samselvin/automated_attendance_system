@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function CredentialsForm() {
   const router = useRouter();
@@ -45,20 +46,7 @@ export function CredentialsForm() {
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500"
         />
       </div>
-      <div>
-        <label className="block text-xs font-medium text-slate-600" htmlFor="password">
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500"
-        />
-      </div>
+      <PasswordInput id="password" label="Password" autoComplete="current-password" value={password} onChange={setPassword} />
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <button
         type="submit"
