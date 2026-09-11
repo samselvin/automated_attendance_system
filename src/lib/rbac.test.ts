@@ -23,6 +23,7 @@ function session(overrides: Partial<Session["user"]> = {}): Session {
       teacherId: null,
       studentId: null,
       isBootstrapAdmin: false,
+      mustChangePassword: false,
       ...overrides,
     },
   };

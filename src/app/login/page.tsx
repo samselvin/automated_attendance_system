@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { LoginForm } from "./login-form";
+import { CredentialsForm } from "./credentials-form";
 
 const ERROR_MESSAGES: Record<string, string> = {
   AccessDenied:
@@ -20,17 +21,27 @@ export default async function LoginPage({
     <main className="flex flex-1 items-center justify-center px-4 py-16">
       <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <h1 className="text-xl font-semibold text-slate-900">College Attendance</h1>
-        <p className="mt-1 text-sm text-slate-500">Sign in with your college Google account.</p>
+        <p className="mt-1 text-sm text-slate-500">
+          Sign in with your college email and password, or your college Google account.
+        </p>
 
         {message ? (
           <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{message}</p>
         ) : null}
 
         <div className="mt-6">
-          <Suspense fallback={null}>
-            <LoginForm />
-          </Suspense>
+          <CredentialsForm />
         </div>
+
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs text-slate-400">or</span>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
       </div>
     </main>
   );

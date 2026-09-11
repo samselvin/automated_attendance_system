@@ -242,8 +242,18 @@ model User {
   status           UserStatus @default(ACTIVE)
   isBootstrapAdmin Boolean    @default(false) @map("is_bootstrap_admin")
   lastLoginAt      DateTime?  @map("last_login_at")
-  createdAt        DateTime   @default(now()) @map("created_at")
-  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  // Email/password login (college-domain accounts only — Section 6's
+  // personal-email bootstrap exception is Google-only and never gets a
+  // password). Admin or import issues a temp password; the user must
+  // change it on first password login.
+  passwordHash        String?   @map("password_hash")
+  mustChangePassword  Boolean   @default(false) @map("must_change_password")
+  failedLoginAttempts Int       @default(0) @map("failed_login_attempts")
+  lockedUntil         DateTime? @map("locked_until")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   roles         UserRole[]
   teacher       Teacher?

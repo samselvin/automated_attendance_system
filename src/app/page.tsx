@@ -12,6 +12,10 @@ export default async function Home() {
     redirect("/login?error=AccessDenied");
   }
 
+  if (session.user.mustChangePassword) {
+    redirect("/change-password");
+  }
+
   const roles = session.user.roles.map((r) => r.role);
   if (roles.includes("ADMIN")) redirect("/admin");
   if (roles.includes("TEACHER")) redirect("/teacher");

@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { PrismaClient, RoleName } from "@prisma/client";
+import { generateTempPassword, hashPassword } from "../src/lib/password";
 
 const prisma = new PrismaClient();
 
@@ -223,10 +224,25 @@ async function main() {
       });
     }
 
-    if (!allowedDomains.includes(domain ?? "")) {
-      console.log(`  Bootstrap admin (non-domain, personal address): ${lower} -> college-wide ADMIN`);
-    } else {
-      console.log(`  Bootstrap admin: ${lower} -> ADMIN${isCollegeDomainHod ? ` (scoped to ${aids.code})` : " (college-wide)"}`);
+    const onAllowedDomain = allowedDomains.includes(domain ?? "");
+
+    if (!onAllowedDomain) {
+      // The personal-email bootstrap exception (Section 6) is Google-only —
+      // it never gets a password.
+      console.log(`  Bootstrap admin (non-domain, personal address): ${lower} -> college-wide ADMIN (Google sign-in only)`);
+      continue;
+    }
+
+    console.log(`  Bootstrap admin: ${lower} -> ADMIN${isCollegeDomainHod ? ` (scoped to ${aids.code})` : " (college-wide)"}`);
+
+    if (!user.passwordHash) {
+      const tempPassword = generateTempPassword();
+      const passwordHash = await hashPassword(tempPassword);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash, mustChangePassword: true },
+      });
+      console.log(`    Temp password (change on first login): ${tempPassword}`);
     }
   }
 

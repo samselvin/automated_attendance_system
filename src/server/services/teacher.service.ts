@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { adminDepartmentScope, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
 import { ConflictError, NotFoundError } from "@/lib/api-utils";
+import { generateTempPassword, hashPassword } from "@/lib/password";
 import type { CreateTeacherInput, UpdateTeacherInput } from "@/lib/validation/teacher";
 
 export async function listTeachers(session: Session, filters: { departmentId?: string } = {}) {
@@ -48,10 +49,24 @@ export async function createTeacher(
     : null;
   if (existingTeacherForUser) throw new ConflictError("This email is already registered as a teacher");
 
-  return prisma.$transaction(async (tx) => {
+  // Every account gets a college-domain password login alongside Google —
+  // issue one now if this user doesn't have one yet (new user, or an
+  // existing Google-only account gaining its first password).
+  const needsPassword = !existingUser?.passwordHash;
+  const tempPassword = needsPassword ? generateTempPassword() : null;
+  const passwordHash = tempPassword ? await hashPassword(tempPassword) : null;
+
+  const teacher = await prisma.$transaction(async (tx) => {
     const user =
       existingUser ??
       (await tx.user.create({ data: { email: input.email, status: "ACTIVE" } }));
+
+    if (needsPassword && passwordHash) {
+      await tx.user.update({
+        where: { id: user.id },
+        data: { passwordHash, mustChangePassword: true },
+      });
+    }
 
     const teacher = await tx.teacher.create({
       data: {
@@ -88,6 +103,8 @@ export async function createTeacher(
 
     return teacher;
   });
+
+  return { teacher, tempPassword };
 }
 
 export async function updateTeacher(

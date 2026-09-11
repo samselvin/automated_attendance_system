@@ -5,6 +5,7 @@ import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { adminDepartmentScope, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
 import { ConflictError, NotFoundError, BadRequestError } from "@/lib/api-utils";
 import { dayBeforeUtc } from "@/lib/time";
+import { generateTempPassword, hashPassword } from "@/lib/password";
 import type {
   CreateStudentInput,
   UpdateStudentInput,
@@ -86,8 +87,21 @@ export async function createStudent(
     if (existingStudent) throw new ConflictError("This email is already registered as a student");
   }
 
-  return prisma.$transaction(async (tx) => {
+  // Every account gets a college-domain password login alongside Google —
+  // issue one now if this user doesn't have one yet.
+  const needsPassword = !existingUser?.passwordHash;
+  const tempPassword = needsPassword ? generateTempPassword() : null;
+  const passwordHash = tempPassword ? await hashPassword(tempPassword) : null;
+
+  const student = await prisma.$transaction(async (tx) => {
     const user = existingUser ?? (await tx.user.create({ data: { email: input.email, status: "ACTIVE" } }));
+
+    if (needsPassword && passwordHash) {
+      await tx.user.update({
+        where: { id: user.id },
+        data: { passwordHash, mustChangePassword: true },
+      });
+    }
 
     const student = await tx.student.create({
       data: {
@@ -143,6 +157,8 @@ export async function createStudent(
 
     return tx.student.findUniqueOrThrow({ where: { id: student.id }, include: STUDENT_INCLUDE });
   });
+
+  return { student, tempPassword };
 }
 
 export async function updateStudent(

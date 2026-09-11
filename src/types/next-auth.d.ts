@@ -17,6 +17,7 @@ declare module "next-auth" {
       teacherId: string | null;
       studentId: string | null;
       isBootstrapAdmin: boolean;
+      mustChangePassword: boolean;
     };
   }
 }

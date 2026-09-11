@@ -1,15 +1,80 @@
 import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "@/lib/auth.config";
 import { prisma } from "@/lib/prisma";
 import { isAllowedDomain, isBootstrapAdminEmail } from "@/lib/env";
 import { writeAuditLog } from "@/lib/audit";
+import { verifyPassword } from "@/lib/password";
+import { isLocked, nextFailedAttemptState } from "@/lib/login-lockout";
+
+const credentialsProvider = Credentials({
+  id: "credentials",
+  name: "Email and password",
+  credentials: {
+    email: { label: "Email", type: "email" },
+    password: { label: "Password", type: "password" },
+  },
+  // Email/password login is college-domain accounts only — no bootstrap
+  // exception here, unlike Google (Section 6's exception is Google-only).
+  async authorize(credentials) {
+    const email = String(credentials?.email ?? "").trim().toLowerCase();
+    const password = String(credentials?.password ?? "");
+    if (!email || !password) return null;
+    if (!isAllowedDomain(email)) return null;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || user.status !== "ACTIVE" || !user.passwordHash) return null;
+
+    if (isLocked(user.lockedUntil)) {
+      await writeAuditLog({
+        actorUserId: user.id,
+        actorRole: "UNKNOWN",
+        action: "PASSWORD_LOGIN_BLOCKED_LOCKED",
+        entityType: "User",
+        entityId: user.id,
+      });
+      return null;
+    }
+
+    const valid = await verifyPassword(password, user.passwordHash);
+    if (!valid) {
+      const next = nextFailedAttemptState(user.failedLoginAttempts);
+      await prisma.user.update({ where: { id: user.id }, data: next });
+      if (next.lockedUntil) {
+        await writeAuditLog({
+          actorUserId: user.id,
+          actorRole: "UNKNOWN",
+          action: "PASSWORD_LOGIN_LOCKED",
+          entityType: "User",
+          entityId: user.id,
+          context: { lockedUntil: next.lockedUntil.toISOString() },
+        });
+      }
+      return null;
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { failedLoginAttempts: 0, lockedUntil: null, lastLoginAt: new Date() },
+    });
+
+    return { id: user.id, email: user.email };
+  },
+});
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  providers: [...authConfig.providers, credentialsProvider],
   callbacks: {
     ...authConfig.callbacks,
 
     async signIn({ user, account, profile }) {
+      if (account?.provider === "credentials") {
+        // authorize() above already did every check (domain, status, lock,
+        // password) — nothing left to verify here.
+        return true;
+      }
+
       if (account?.provider !== "google" || !profile) return false;
 
       const email = (profile.email as string | undefined)?.toLowerCase();
@@ -84,6 +149,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.teacherId = null;
         session.user.studentId = null;
         session.user.isBootstrapAdmin = false;
+        session.user.mustChangePassword = false;
         return session;
       }
 
@@ -102,6 +168,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.teacherId = null;
         session.user.studentId = null;
         session.user.isBootstrapAdmin = false;
+        session.user.mustChangePassword = false;
         return session;
       }
 
@@ -115,6 +182,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.teacherId = dbUser.teacher?.id ?? null;
       session.user.studentId = dbUser.student?.id ?? null;
       session.user.isBootstrapAdmin = dbUser.isBootstrapAdmin;
+      session.user.mustChangePassword = dbUser.mustChangePassword;
 
       return session;
     },

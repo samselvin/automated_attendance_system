@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { adminDepartmentScope, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
 import { BadRequestError, ConflictError, NotFoundError } from "@/lib/api-utils";
+import { generateTempPassword, hashPassword } from "@/lib/password";
 import { parseCsvText, applyColumnMapping } from "@/lib/import/csv";
 import {
   validateStudentRow,
@@ -237,7 +238,9 @@ export async function confirmImportJob(
   const validRows = job.rows.filter((r) => r.status === "VALID");
   if (validRows.length === 0) throw new BadRequestError("No valid rows to import");
 
-  return prisma.$transaction(async (tx) => {
+  const issuedCredentials: Array<{ email: string; tempPassword: string }> = [];
+
+  const updatedJob = await prisma.$transaction(async (tx) => {
     let imported = 0;
 
     for (const row of validRows) {
@@ -249,7 +252,16 @@ export async function confirmImportJob(
           throw new ConflictError(`Row ${row.rowNumber}: ${dbErrors.join("; ")}`);
         }
         const department = await tx.department.findUniqueOrThrow({ where: { code: normalized.departmentCode } });
-        const user = await tx.user.create({ data: { email: normalized.email, status: "ACTIVE" } });
+        const existingUser = await tx.user.findUnique({ where: { email: normalized.email } });
+        const user = existingUser ?? (await tx.user.create({ data: { email: normalized.email, status: "ACTIVE" } }));
+
+        if (!existingUser?.passwordHash) {
+          const tempPassword = generateTempPassword();
+          const passwordHash = await hashPassword(tempPassword);
+          await tx.user.update({ where: { id: user.id }, data: { passwordHash, mustChangePassword: true } });
+          issuedCredentials.push({ email: user.email, tempPassword });
+        }
+
         await tx.teacher.create({
           data: {
             userId: user.id,
@@ -289,7 +301,16 @@ export async function confirmImportJob(
           where: { academicYearId_number: { academicYearId: academicYear.id, number: normalized.semesterNumber } },
         });
 
-        const user = await tx.user.create({ data: { email: normalized.email, status: "ACTIVE" } });
+        const existingUser = await tx.user.findUnique({ where: { email: normalized.email } });
+        const user = existingUser ?? (await tx.user.create({ data: { email: normalized.email, status: "ACTIVE" } }));
+
+        if (!existingUser?.passwordHash) {
+          const tempPassword = generateTempPassword();
+          const passwordHash = await hashPassword(tempPassword);
+          await tx.user.update({ where: { id: user.id }, data: { passwordHash, mustChangePassword: true } });
+          issuedCredentials.push({ email: user.email, tempPassword });
+        }
+
         const student = await tx.student.create({
           data: {
             userId: user.id,
@@ -350,4 +371,6 @@ export async function confirmImportJob(
 
     return updatedJob;
   });
+
+  return { job: updatedJob, issuedCredentials };
 }

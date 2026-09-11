@@ -60,7 +60,10 @@ This is being built phase by phase (see the master prompt, Section 54):
 
    The seed script creates the AIDS department, the R2022 regulation and
    grading scale, a demo academic year/class, default system settings, and
-   an Admin user for every address in `INITIAL_ADMIN_EMAILS`.
+   an Admin user for every address in `INITIAL_ADMIN_EMAILS`. Any of those
+   emails on an allowed college domain also gets a temp password printed to
+   the console — the personal-email bootstrap address (if any) is Google
+   sign-in only.
 
 6. **Start the dev server**
 
@@ -68,8 +71,8 @@ This is being built phase by phase (see the master prompt, Section 54):
    npm run dev
    ```
 
-   Sign in with an `INITIAL_ADMIN_EMAILS` Google account to reach the Admin
-   dashboard.
+   Sign in with an `INITIAL_ADMIN_EMAILS` account (its printed temp password,
+   or Google) to reach the Admin dashboard.
 
 ## Scripts
 
@@ -87,9 +90,18 @@ This is being built phase by phase (see the master prompt, Section 54):
 
 ## Security notes
 
-- Login is Google OAuth only; there is no self-registration. Users must
-  already exist in the database (created by Admin or import) before they can
-  sign in.
+- Two login methods: Google OAuth, or college-email + password. Either way
+  there is no self-registration — users must already exist in the database
+  (created by Admin or import) before they can sign in.
+- Password accounts are college-domain only (`ALLOWED_EMAIL_DOMAINS`) — the
+  personal-email bootstrap-admin exception below is Google sign-in only.
+  Admin/import issues a random temp password for every new account (shown
+  once at creation time); the user must change it on first password login.
+  Passwords are hashed with scrypt (a random salt per password, Node's
+  built-in `crypto`, no plaintext ever stored or logged). Five failed
+  attempts locks the account for 15 minutes. Admin can issue a fresh temp
+  password for anyone in their department scope from
+  `POST /api/admin/users/:id/reset-password`.
 - `INITIAL_ADMIN_EMAILS` may include one address outside
   `ALLOWED_EMAIL_DOMAINS` as a one-time bootstrap exception so a founding
   Admin can set up the college's real domain and its first in-domain Admin.
