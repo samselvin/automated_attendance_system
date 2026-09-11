@@ -24,8 +24,8 @@ function slot(overrides: Partial<SlotInput>): SlotInput {
 describe("validateBellScheduleSlots", () => {
   it("accepts a well-formed schedule with no gaps needed", () => {
     const slots = [
-      slot({ label: "Period 1", startTime: "09:00", endTime: "09:50", sortOrder: 1 }),
-      slot({ label: "Period 2", startTime: "09:50", endTime: "10:40", sortOrder: 2 }),
+      slot({ label: "Period 1", startTime: "09:00", endTime: "09:50", sortOrder: 1, periodNumber: 1 }),
+      slot({ label: "Period 2", startTime: "09:50", endTime: "10:40", sortOrder: 2, periodNumber: 2 }),
     ];
     expect(validateBellScheduleSlots(slots)).toEqual([]);
   });
@@ -38,8 +38,8 @@ describe("validateBellScheduleSlots", () => {
 
   it("flags two overlapping slots", () => {
     const slots = [
-      slot({ label: "Period 1", startTime: "09:00", endTime: "09:50" }),
-      slot({ label: "Period 2", startTime: "09:40", endTime: "10:30" }),
+      slot({ label: "Period 1", startTime: "09:00", endTime: "09:50", periodNumber: 1 }),
+      slot({ label: "Period 2", startTime: "09:40", endTime: "10:30", periodNumber: 2 }),
     ];
     const errors = validateBellScheduleSlots(slots);
     expect(errors.length).toBeGreaterThan(0);
@@ -52,6 +52,26 @@ describe("validateBellScheduleSlots", () => {
       slot({ label: "Break", startTime: "09:50", endTime: "10:00", slotType: "SHORT_BREAK" }),
     ];
     expect(validateBellScheduleSlots(slots)).toEqual([]);
+  });
+
+  it("flags a PERIOD slot with no periodNumber", () => {
+    const slots = [slot({ label: "Period 1", periodNumber: null })];
+    const errors = validateBellScheduleSlots(slots);
+    expect(errors.some((e) => e.includes("periodNumber"))).toBe(true);
+  });
+
+  it("does not require periodNumber on a break", () => {
+    const slots = [slot({ label: "Break", slotType: "SHORT_BREAK", periodNumber: null, startTime: "10:40", endTime: "10:55" })];
+    expect(validateBellScheduleSlots(slots)).toEqual([]);
+  });
+
+  it("flags duplicate periodNumber across PERIOD slots", () => {
+    const slots = [
+      slot({ label: "Period 1", periodNumber: 1, startTime: "09:00", endTime: "09:50" }),
+      slot({ label: "Period 1 (dup)", periodNumber: 1, startTime: "09:50", endTime: "10:40" }),
+    ];
+    const errors = validateBellScheduleSlots(slots);
+    expect(errors.some((e) => e.includes("unique"))).toBe(true);
   });
 });
 

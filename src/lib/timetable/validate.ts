@@ -19,6 +19,14 @@ export function validateBellScheduleSlots(slots: SlotInput[]): string[] {
     if (slot.startTime >= slot.endTime) {
       errors.push(`"${slot.label}" has an end time (${slot.endTime}) at or before its start time (${slot.startTime})`);
     }
+    if (slot.slotType === "PERIOD" && slot.periodNumber == null) {
+      errors.push(`"${slot.label}" is a PERIOD slot but has no periodNumber — attendance sessions key on it`);
+    }
+  }
+
+  const periodNumbers = slots.filter((s) => s.slotType === "PERIOD").map((s) => s.periodNumber);
+  if (new Set(periodNumbers).size !== periodNumbers.length) {
+    errors.push("periodNumber must be unique across PERIOD slots in the same bell schedule");
   }
 
   const sorted = [...slots].sort((a, b) => a.startTime.localeCompare(b.startTime));

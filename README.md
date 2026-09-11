@@ -30,7 +30,18 @@ This is being built phase by phase (see the master prompt, Section 54):
       actual time overlap, not just shared slot IDs), lock/unlock,
       timetable change requests, academic calendar days, substitute
       assignment — all with in-app notifications and audit logs
-- [ ] Phase 4 — attendance sessions/records, leave & OD, percentages
+- [x] **Phase 4** — attendance sessions created lazily and idempotently (one
+      per period, even across a multi-period lab block), the daily
+      attendance window with late-unlock requests, roster fetch with
+      approved-leave pre-fill, submission, corrections (with a teacher
+      correction window vs. Admin any-time), Leave/Medical single-approval
+      and On-Duty dual-approval (rejection wins immediately either side),
+      the teacher-marked direct Leave/OD shortcut gated on the
+      MARK_LEAVE_OD_DIRECT HOD grant, retroactive application of an
+      approval to attendance already taken (with an audit trail), the
+      attendance-percentage calculation (configurable Leave/OD counting),
+      and a missing-attendance report that diffs the timetable's expected
+      periods against what was actually held
 - [ ] Phase 5 — notifications, first-hour parent SMS
 - [ ] Phase 6 — marks, internal marks, results, SGPA/CGPA
 - [ ] Phase 7 — dashboards, reports & export
