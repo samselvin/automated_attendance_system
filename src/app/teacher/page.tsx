@@ -1,28 +1,105 @@
+import Link from "next/link";
 import { requireRolePage } from "@/lib/guards";
-import { getActiveAdvisorClassIds } from "@/lib/class-advisor";
 import { TopBar } from "@/components/top-bar";
+import { Card, CardHeader } from "@/components/ui/card";
+import { Badge, statusVariant } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getTeacherScheduleForDate } from "@/server/services/schedule.service";
+import { getActiveAdvisorClassIds } from "@/lib/class-advisor";
+import { collegeDateString, collegeTimeString } from "@/lib/time";
+import { getSetting } from "@/lib/settings";
+import { prisma } from "@/lib/prisma";
 
-export default async function TeacherDashboard() {
+export default async function TeacherHome() {
   const session = await requireRolePage("TEACHER");
-  const advisorClassIds = session.user.teacherId
-    ? await getActiveAdvisorClassIds(session.user.teacherId)
-    : [];
+  const teacherId = session.user.teacherId!;
+  const today = collegeDateString();
+  const now = collegeTimeString();
+
+  const [schedule, advisorClassIds, cutoff] = await Promise.all([
+    getTeacherScheduleForDate(session, today),
+    getActiveAdvisorClassIds(teacherId),
+    getSetting<string>("ATTENDANCE_DAILY_CUTOFF"),
+  ]);
+
+  const missingCount = schedule.filter((s) => s.attendanceStatus !== "HELD" && s.scheduledStart && now > s.scheduledStart).length;
+
+  let advisorSummary: { className: string; studentCount: number; pendingLeave: number }[] = [];
+  if (advisorClassIds.length > 0) {
+    advisorSummary = await Promise.all(
+      advisorClassIds.map(async (classId) => {
+        const cls = await prisma.class.findUniqueOrThrow({ where: { id: classId } });
+        const [studentCount, pendingLeave] = await Promise.all([
+          prisma.studentEnrollment.count({ where: { classId, status: "ACTIVE" } }),
+          prisma.leaveRequest.count({
+            where: { status: "PENDING", student: { enrollments: { some: { classId, status: "ACTIVE" } } } },
+          }),
+        ]);
+        return { className: `${cls.yearOfStudy}-${cls.section}`, studentCount, pendingLeave };
+      })
+    );
+  }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <TopBar title={`Good day, ${session.user.email}`} subtitle="Teacher" />
-      <main className="flex-1 p-4 sm:p-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-sm font-medium text-slate-900">Current period</p>
-          <p className="mt-1 text-sm text-slate-500">No timetable data yet — coming in a later phase.</p>
-        </div>
-        {advisorClassIds.length > 0 ? (
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-sm font-medium text-slate-900">Class Advisor duties</p>
-            <p className="mt-1 text-sm text-slate-500">
-              You are the active Class Advisor for {advisorClassIds.length} class(es).
-            </p>
-          </div>
+    <div className="flex min-h-full flex-col">
+      <TopBar title={`Hi, ${session.user.email.split("@")[0]}`} subtitle="Teacher" />
+      <main className="flex-1 space-y-4 p-4">
+        {missingCount > 0 ? (
+          <Card className="border-amber-300 bg-amber-50">
+            <p className="text-sm font-medium text-amber-800">{missingCount} session(s) still need attendance today</p>
+          </Card>
+        ) : null}
+
+        <Card>
+          <CardHeader title="Today's schedule" subtitle={`Daily cutoff: ${cutoff}`} />
+          {schedule.length === 0 ? (
+            <EmptyState title="No classes today" />
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {schedule.map((entry) => (
+                <li key={entry.timetableEntryId} className="flex items-center justify-between py-3">
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">
+                      {entry.subjectName} · {entry.className}
+                      {entry.groupName ? ` (${entry.groupName})` : ""}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {entry.scheduledStart}–{entry.scheduledEnd} {entry.roomName ? `· ${entry.roomName}` : ""}
+                      {entry.isSubstituting ? " · Substituting" : ""}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge label={entry.attendanceStatus} variant={statusVariant(entry.attendanceStatus)} />
+                    {entry.attendanceStatus !== "HELD" ? (
+                      <Link href={`/teacher/attendance/${entry.timetableEntryId}?date=${today}`}>
+                        <Button className="px-3 py-1.5 text-xs">Take</Button>
+                      </Link>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        {advisorSummary.length > 0 ? (
+          <Card>
+            <CardHeader title="My Class (Class Advisor)" />
+            <ul className="space-y-2">
+              {advisorSummary.map((s) => (
+                <li key={s.className} className="flex items-center justify-between text-sm">
+                  <span className="font-medium text-slate-900">{s.className}</span>
+                  <span className="text-slate-500">
+                    {s.studentCount} students · {s.pendingLeave} pending leave/OD
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link href="/teacher/leave-requests" className="mt-2 inline-block text-xs font-medium text-slate-600 underline">
+              Review leave/OD requests
+            </Link>
+          </Card>
         ) : null}
       </main>
     </div>

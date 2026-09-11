@@ -2,8 +2,8 @@ import type { Session } from "next-auth";
 import type { Prisma } from "@prisma/client";
 import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
-import { canAccessDepartment, isAdmin, isTeacher, ForbiddenError, UnauthorizedError } from "@/lib/rbac";
-import { isActiveClassAdvisor } from "@/lib/class-advisor";
+import { canAccessDepartment, isAdmin, ForbiddenError, UnauthorizedError } from "@/lib/rbac";
+import { isActiveClassAdvisor, getActiveAdvisorClassIds } from "@/lib/class-advisor";
 import { computeOdStatus, type ApproverDecision } from "@/lib/attendance/od-approval";
 import { notifyUser } from "@/lib/notify";
 import { BadRequestError, ConflictError, NotFoundError } from "@/lib/api-utils";
@@ -155,9 +155,23 @@ export async function listLeaveRequests(
   filters: { studentId?: string; status?: string; type?: string } = {}
 ) {
   const where: Record<string, unknown> = { ...filters };
-  if (session.user.studentId && !isAdmin(session) && !isTeacher(session)) {
+
+  if (isAdmin(session)) {
+    // Admin sees everything within filters as given (department scoping on
+    // leave data isn't enforced further here — Admin already has broad
+    // visibility per Section 5).
+  } else if (session.user.teacherId) {
+    // A teacher only sees leave/OD for students in classes they actively
+    // advise (Section 12) — not every student college-wide.
+    const classIds = await getActiveAdvisorClassIds(session.user.teacherId);
+    if (classIds.length === 0) return [];
+    where.student = { enrollments: { some: { classId: { in: classIds }, status: "ACTIVE" } } };
+  } else if (session.user.studentId) {
     where.studentId = session.user.studentId;
+  } else {
+    return [];
   }
+
   return prisma.leaveRequest.findMany({
     where,
     include: { student: true },

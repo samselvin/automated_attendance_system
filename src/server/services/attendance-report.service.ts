@@ -55,6 +55,58 @@ export async function getStudentAttendancePercentage(
   };
 }
 
+/** Section 35's subject-wise attendance breakdown on the student app. */
+export async function getStudentSubjectWiseAttendance(session: Session, studentId: string) {
+  const student = await prisma.student.findUnique({ where: { id: studentId } });
+  if (!student) throw new NotFoundError("Student not found");
+
+  const isSelf = session.user.studentId === studentId;
+  const authorized = isSelf || isTeacher(session) || (isAdmin(session) && canAccessDepartment(session, student.departmentId));
+  if (!authorized) throw new ForbiddenError("Not authorized to view this student's attendance");
+
+  const records = await prisma.attendanceRecord.findMany({
+    where: { studentId, session: { status: "HELD" } },
+    select: { status: true, session: { select: { subjectOfferingId: true } } },
+  });
+
+  const [approvedLeaveCounts, onDutyCounts, safeThreshold, warningThreshold] = await Promise.all([
+    getSetting<string>("APPROVED_LEAVE_COUNTS_AS"),
+    getSetting<string>("ON_DUTY_COUNTS_AS"),
+    getSetting<number>("ATTENDANCE_THRESHOLD_SAFE"),
+    getSetting<number>("ATTENDANCE_THRESHOLD_WARNING"),
+  ]);
+  const settings = {
+    approvedLeaveCounts: approvedLeaveCounts as "COUNT_AS_PRESENT" | "COUNT_AS_ABSENT" | "EXCLUDE_FROM_TOTAL",
+    onDutyCounts: onDutyCounts as "COUNT_AS_PRESENT" | "COUNT_AS_ABSENT" | "EXCLUDE_FROM_TOTAL",
+  };
+
+  const byOffering = new Map<string, RecordStatus[]>();
+  for (const r of records) {
+    const list = byOffering.get(r.session.subjectOfferingId) ?? [];
+    list.push(r.status as RecordStatus);
+    byOffering.set(r.session.subjectOfferingId, list);
+  }
+
+  const offerings = await prisma.subjectOffering.findMany({
+    where: { id: { in: [...byOffering.keys()] } },
+    include: { subject: true },
+  });
+
+  return offerings.map((offering) => {
+    const statuses = byOffering.get(offering.id) ?? [];
+    const result = calculateAttendancePercentage(statuses, settings);
+    return {
+      subjectOfferingId: offering.id,
+      subjectName: offering.subject.name,
+      subjectCode: offering.subject.code,
+      percentageRounded: Math.round(result.percentage * 100) / 100,
+      level: attendanceLevel(result.percentage, safeThreshold, warningThreshold),
+      applicableHours: result.applicableHours,
+      attendedHours: result.attendedHours,
+    };
+  });
+}
+
 /**
  * Section 24: a session flagged "Attendance Missing" is one the timetable
  * expected but that hasn't been HELD by the daily cutoff. Since sessions

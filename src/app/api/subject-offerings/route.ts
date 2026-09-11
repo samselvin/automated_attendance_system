@@ -10,6 +10,7 @@ export async function GET(req: Request) {
       classId: url.searchParams.get("classId") ?? undefined,
       studentGroupId: url.searchParams.get("studentGroupId") ?? undefined,
       semesterId: url.searchParams.get("semesterId") ?? undefined,
+      teacherId: url.searchParams.get("teacherId") ?? undefined,
     });
   });
 }

@@ -1,7 +1,7 @@
 import type { Session } from "next-auth";
 import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
-import { isAdmin } from "@/lib/rbac";
+import { isAdmin, isTeacher, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
 import { getSetting } from "@/lib/settings";
 import { calculateInternalMarks, roundMark, type RoundingRule } from "@/lib/marks/internal-marks";
 import { BadRequestError, ConflictError, NotFoundError } from "@/lib/api-utils";
@@ -183,4 +183,62 @@ export async function computeAndStoreInternalMarks(
 
     return stored;
   }, LONG_TRANSACTION_OPTIONS);
+}
+
+/**
+ * Section 35's Academics screen: CAT/Class Test/Assignment/MCQ marks,
+ * internal marks and semester result — only for subject offerings whose
+ * marks have been published (Section 34: "students see marks only after
+ * they are published"). Teachers/Admin viewing a student bypass that gate.
+ */
+export async function getMyMarksOverview(session: Session, studentId: string) {
+  const student = await prisma.student.findUnique({ where: { id: studentId } });
+  if (!student) throw new NotFoundError("Student not found");
+
+  const isSelf = session.user.studentId === studentId;
+  const authorized = isSelf || isTeacher(session) || (isAdmin(session) && canAccessDepartment(session, student.departmentId));
+  if (!authorized) throw new ForbiddenError("Not authorized to view this student's marks");
+
+  const enrollment = await prisma.studentEnrollment.findFirst({
+    where: { studentId, status: "ACTIVE" },
+    orderBy: { effectiveFrom: "desc" },
+  });
+  if (!enrollment) return [];
+
+  const offerings = await prisma.subjectOffering.findMany({
+    where: {
+      classId: enrollment.classId,
+      semesterId: enrollment.semesterId,
+      ...(isSelf ? { marksPublished: true } : {}),
+    },
+    include: {
+      subject: true,
+      assessmentComponents: {
+        include: { marks: { where: { studentId } } },
+        orderBy: { conductedOn: "asc" },
+      },
+    },
+  });
+
+  const results = await prisma.semesterResult.findMany({
+    where: { studentId, semesterId: enrollment.semesterId, attemptNumber: 1, ...(isSelf ? { isPublished: true } : {}) },
+  });
+  const resultBySubject = new Map(results.map((r) => [r.subjectId, r]));
+
+  return offerings.map((offering) => ({
+    subjectOfferingId: offering.id,
+    subjectName: offering.subject.name,
+    subjectCode: offering.subject.code,
+    components: offering.assessmentComponents.map((c) => ({
+      id: c.id,
+      groupKey: c.groupKey,
+      label: c.label,
+      maxMarks: Number(c.maxMarks),
+      marksObtained: c.marks[0]?.marksObtained != null ? Number(c.marks[0].marksObtained) : null,
+      entryStatus: c.marks[0]?.entryStatus ?? null,
+    })),
+    internalMark: resultBySubject.get(offering.subjectId)?.internalMark ?? null,
+    grade: resultBySubject.get(offering.subjectId)?.grade ?? null,
+    gradePoint: resultBySubject.get(offering.subjectId)?.gradePoint ?? null,
+  }));
 }

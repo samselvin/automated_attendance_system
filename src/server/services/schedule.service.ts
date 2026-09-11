@@ -99,3 +99,86 @@ export async function getTeacherScheduleForDate(session: Session, dateStr: strin
   result.sort((a, b) => (a.scheduledStart ?? "").localeCompare(b.scheduledStart ?? ""));
   return result;
 }
+
+/** Section 35: "Today's Classes" on the student Home screen, each showing
+ * the student's own attendance status once it's been submitted. */
+export async function getStudentScheduleForDate(session: Session, dateStr: string) {
+  if (!session.user.studentId) throw new UnauthorizedError("Only a student has a personal schedule");
+  const studentId = session.user.studentId;
+  const date = new Date(`${dateStr}T00:00:00.000Z`);
+  const weekday = WEEKDAYS[date.getUTCDay()];
+
+  const enrollment = await prisma.studentEnrollment.findFirst({
+    where: { studentId, status: "ACTIVE", effectiveFrom: { lte: date }, OR: [{ effectiveTo: null }, { effectiveTo: { gte: date } }] },
+    orderBy: { effectiveFrom: "desc" },
+  });
+  if (!enrollment) return [];
+
+  const groupIds = (
+    await prisma.studentGroupMember.findMany({ where: { studentId }, select: { studentGroupId: true } })
+  ).map((g) => g.studentGroupId);
+
+  const dayOverride = await prisma.academicCalendarDay.findFirst({ where: { date } });
+
+  const entries = await prisma.timetableEntry.findMany({
+    where: {
+      OR: [{ studentGroupId: null }, { studentGroupId: { in: groupIds } }],
+      timetableVersion: {
+        classId: enrollment.classId,
+        effectiveFrom: { lte: date },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gte: date } }],
+      },
+    },
+    include: {
+      timetableVersion: { include: { class: true } },
+      subjectOffering: { include: { subject: true } },
+      slots: { include: { bellScheduleSlot: true }, orderBy: { bellScheduleSlot: { sortOrder: "asc" } } },
+      teachers: { include: { teacher: true } },
+      room: true,
+    },
+  });
+
+  const relevant = entries.filter((e) =>
+    e.timetableVersion.timetableType === "WEEKDAY" ? e.weekday === weekday : dayOverride?.dayOrderOverride === e.dayOrder
+  );
+
+  const holidays = await prisma.academicCalendarDay.findMany({
+    where: { date, dayType: { in: ["HOLIDAY_GOVT", "HOLIDAY_COLLEGE", "HOLIDAY_EMERGENCY"] } },
+  });
+  const collegeWideHoliday = holidays.some((h) => h.departmentId === null);
+  const holidayDepartments = new Set(holidays.map((h) => h.departmentId).filter((d): d is string => !!d));
+  const notCancelled = relevant.filter(
+    (e) => !collegeWideHoliday && !holidayDepartments.has(e.timetableVersion.class.departmentId)
+  );
+
+  const result = [];
+  for (const entry of notCancelled) {
+    const firstPeriodNumber = entry.slots[0]?.bellScheduleSlot.periodNumber ?? null;
+    let myStatus: string | null = null;
+    if (firstPeriodNumber != null) {
+      const attSession = await prisma.attendanceSession.findFirst({
+        where: {
+          classId: entry.studentGroupId ? null : enrollment.classId,
+          studentGroupId: entry.studentGroupId,
+          date,
+          periodNumber: firstPeriodNumber,
+        },
+        include: { records: { where: { studentId } } },
+      });
+      myStatus = attSession?.records[0]?.status ?? null;
+    }
+
+    result.push({
+      timetableEntryId: entry.id,
+      subjectName: entry.subjectOffering.subject.name,
+      teacherName: entry.teachers[0]?.teacher.fullName ?? null,
+      roomName: entry.room?.name ?? null,
+      scheduledStart: entry.slots[0]?.bellScheduleSlot.startTime ?? null,
+      scheduledEnd: entry.slots[entry.slots.length - 1]?.bellScheduleSlot.endTime ?? null,
+      myStatus,
+    });
+  }
+
+  result.sort((a, b) => (a.scheduledStart ?? "").localeCompare(b.scheduledStart ?? ""));
+  return result;
+}

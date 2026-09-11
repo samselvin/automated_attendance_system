@@ -1,0 +1,50 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+
+export function CreateRegulationForm() {
+  const router = useRouter();
+  const [code, setCode] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const res = await fetch("/api/regulations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, name }),
+    });
+    setLoading(false);
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      setError(body?.issues?.[0]?.message ?? body?.message ?? "Could not create regulation.");
+      return;
+    }
+    setCode("");
+    setName("");
+    router.refresh();
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-slate-300 p-3">
+      <div>
+        <label className="block text-xs font-medium text-slate-600">Code</label>
+        <input required value={code} onChange={(e) => setCode(e.target.value)} placeholder="R2022" className="mt-1 w-28 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+      </div>
+      <div className="flex-1">
+        <label className="block text-xs font-medium text-slate-600">Name</label>
+        <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Regulation 2022" className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+      </div>
+      {error ? <p className="w-full text-xs text-red-600">{error}</p> : null}
+      <Button type="submit" disabled={loading} className="text-sm">
+        {loading ? "Adding…" : "Add regulation"}
+      </Button>
+    </form>
+  );
+}

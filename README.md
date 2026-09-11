@@ -71,7 +71,39 @@ This is being built phase by phase (see the master prompt, Section 54):
       snapshot, first attempt only) / CGPA (cumulative, latest passing
       attempt per subject — proved live that a fixed arrear correctly
       replaces its earlier fail).
-- [ ] Phase 7 — dashboards, reports & export
+- [x] **Phase 7 (core workflows built and verified live; some admin/report
+      screens still pending)** — role-based layouts and navigation for all
+      three roles (student bottom nav, teacher bottom nav, admin sidebar
+      with a mobile dropdown fallback); a notification bell with unread
+      count. **Student**: Home, Attendance (overall + subject-wise +
+      leave/OD history), Apply for Leave/OD, Academics (marks + SGPA/CGPA,
+      gated on publish), Timetable (weekly view), Profile. **Teacher**:
+      Today's schedule with a Take Attendance button, the full
+      roll-number-search-free roster flow (mark all present/absent,
+      per-student P/A/L/OD, review screen, submit), Leave/OD approval
+      queue, Marks entry (create components, bulk-enter with a max-marks
+      guard), Timetable change requests. **Admin**: dashboard with real
+      stats (students/teachers/classes, pending queues, classes missing an
+      advisor, first-hour SMS today, recent imports), and management
+      screens for Departments, Academic Years/Semesters, Classes, Teachers
+      and Students (temp password shown once on creation), Class Advisor
+      postings, Regulations/Grading, Subjects/Offerings, Bell Schedules,
+      Timetable versions/entries (with the Section 21 conflict engine
+      surfaced as validation errors), Academic Calendar, Substitutions,
+      Leave/OD + Timetable-request + Late-Unlock approval queues, CSV
+      Import wizard, and a Reports screen (class attendance + low-attendance
+      lists) with CSV export and a print-friendly view.
+      Verified end-to-end in a real browser session across all three roles
+      on freshly seeded data: admin creates data → teacher takes attendance
+      and enters marks → student sees it live and applies for leave →
+      teacher approves it → attendance record retroactively flips, exactly
+      as Phase 4 promised, this time proven through the actual UI, not a
+      script.
+      **Not yet built**: Excel (.xlsx) and PDF export (CSV and print-view
+      only so far); most of Section 39's other report types (only class
+      attendance and low-attendance are done); Events (Section 36) has no
+      UI or CRUD yet; a few nice-to-haves like an inline timetable-entry
+      editor and a dedicated day-order calendar view.
 - [ ] Phase 8 — full test pass, security/performance review, PWA polish, deploy
 
 ## Local setup

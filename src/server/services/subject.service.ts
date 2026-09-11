@@ -92,11 +92,12 @@ export async function updateSubject(
 
 export async function listSubjectOfferings(
   session: Session,
-  filters: { classId?: string; studentGroupId?: string; semesterId?: string } = {}
+  filters: { classId?: string; studentGroupId?: string; semesterId?: string; teacherId?: string } = {}
 ) {
+  const { teacherId, ...rest } = filters;
   return prisma.subjectOffering.findMany({
-    where: filters,
-    include: { subject: true, teachers: { include: { teacher: true } } },
+    where: { ...rest, ...(teacherId ? { teachers: { some: { teacherId } } } : {}) },
+    include: { subject: true, teachers: { include: { teacher: true } }, class: true },
     orderBy: { createdAt: "desc" },
   });
 }

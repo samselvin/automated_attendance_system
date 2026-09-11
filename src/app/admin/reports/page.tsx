@@ -1,0 +1,30 @@
+import { requireRolePage } from "@/lib/guards";
+import { TopBar } from "@/components/top-bar";
+import { Card, CardHeader } from "@/components/ui/card";
+import { listClasses } from "@/server/services/class.service";
+import { ClassAttendanceReport } from "./class-attendance-report";
+import { LowAttendanceReport } from "./low-attendance-report";
+
+export default async function ReportsPage() {
+  const session = await requireRolePage("ADMIN");
+  const classes = await listClasses(session);
+
+  return (
+    <div className="flex min-h-full flex-col">
+      <TopBar title="Reports & Export" showNotifications={false} />
+      <main className="flex-1 space-y-4 p-4 sm:p-6">
+        <p className="text-xs text-slate-400 print:hidden">
+          CSV export and print-friendly view are available below. Excel (.xlsx) and PDF export are not built yet.
+        </p>
+        <Card>
+          <CardHeader title="Class attendance report" />
+          <ClassAttendanceReport classes={classes.map((c) => ({ id: c.id, label: `${c.department.code} ${c.yearOfStudy}-${c.section}` }))} />
+        </Card>
+        <Card className="print:hidden">
+          <CardHeader title="Low-attendance students (below Safe threshold)" />
+          <LowAttendanceReport />
+        </Card>
+      </main>
+    </div>
+  );
+}
