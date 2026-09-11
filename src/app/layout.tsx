@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   title: "College Attendance",
   description: "College Attendance Management System",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "Attendance",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {

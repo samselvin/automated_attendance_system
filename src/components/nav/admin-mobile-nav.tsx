@@ -23,9 +23,10 @@ const LINKS = [
   ["/admin/reports", "Reports & Export"],
 ] as const;
 
-export function AdminMobileNav() {
+export function AdminMobileNav({ showAuditLogs = false }: { showAuditLogs?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
+  const links = showAuditLogs ? [...LINKS, ["/admin/audit-logs", "Audit Logs"] as const] : LINKS;
 
   return (
     <div className="border-b border-slate-200 bg-white p-2 md:hidden">
@@ -34,7 +35,7 @@ export function AdminMobileNav() {
         onChange={(e) => router.push(e.target.value)}
         className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
       >
-        {LINKS.map(([href, label]) => (
+        {links.map(([href, label]) => (
           <option key={href} value={href}>
             {label}
           </option>

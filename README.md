@@ -104,7 +104,62 @@ This is being built phase by phase (see the master prompt, Section 54):
       attendance and low-attendance are done); Events (Section 36) has no
       UI or CRUD yet; a few nice-to-haves like an inline timetable-entry
       editor and a dedicated day-order calendar view.
-- [ ] Phase 8 — full test pass, security/performance review, PWA polish, deploy
+- [x] **Phase 8 (test pass, security/performance review, PWA polish and
+      deployment groundwork — a settings UI and an automated e2e suite are
+      the two pieces still open, see below)**. **Testing**: full
+      `tsc`/`eslint`/`vitest`/`build` pass is clean (127 unit tests, up
+      from 120 at Phase 7); see `docs/testing.md` for what's automated and
+      what's still manual-only. **Security**: standard security headers
+      (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
+      Permissions-Policy — `next.config.ts`) and `poweredByHeader: false`;
+      a sliding-window rate limiter (`src/lib/rate-limit.ts`) on login,
+      search, and import endpoints via `proxy.ts` (documented as an
+      in-memory, single-instance implementation — see Section 43 notes in
+      `docs/pending-credentials.md`); a new Admin **Audit Logs** screen
+      (`/admin/audit-logs`, college-wide Admin only) closing the gap where
+      Section 44's audit trail was being written but was never actually
+      viewable. **Performance**: the low-attendance report and the daily
+      low-attendance-alert cron job were doing one database round trip per
+      student college-wide — rewritten to a single grouped aggregate query
+      each (`report.service.ts`, `alerts.service.ts`), and the
+      missing-attendance report's per-period `findFirst` loop was
+      collapsed into one batch fetch (`attendance-report.service.ts`); the
+      Admin Students list is now paginated (50/page) with a name/roll-number
+      search instead of returning every student unbounded on every load.
+      **PWA**: a real app icon and manifest (`public/manifest.json`,
+      `src/app/icon.png` / `apple-icon.png`, `appleWebApp` metadata for
+      iOS), and a minimal service worker (`public/sw.js`) that caches only
+      the static app shell and never intercepts an API call — attendance,
+      marks and notifications can never be served stale, per Section 46.
+      **Deployment**: `docs/deployment.md` covers Vercel end to end
+      (env vars, `db:deploy` vs `db:migrate`, Cron verification, domain/HTTPS);
+      `docs/setup-google-oauth.md`, `docs/setup-neon.md`, `docs/setup-sms.md`
+      and `docs/setup-file-storage.md` cover every external credential;
+      `docs/guide-admin.md`, `docs/guide-teacher.md` and `docs/guide-student.md`
+      are the Section 55 user guides; `docs/pending-credentials.md` is the
+      single list of everything still waiting on a credential.
+      **Not yet built**: an Admin screen for the college-wide
+      `SystemSetting` rows (thresholds, cutoff time, Leave/OD counting —
+      all genuinely configurable today, just via `db:studio` rather than a
+      form; see `docs/guide-admin.md`); an automated integration/e2e test
+      suite (Section 51 — every phase's end-to-end verification so far has
+      been manual, see `docs/testing.md`); a UI button for the existing
+      `POST /api/admin/users/:id/reset-password` endpoint; Leave/OD
+      document upload (schema-ready, no upload route/UI — see
+      `docs/setup-file-storage.md`).
+
+## Documentation
+
+- [`docs/deployment.md`](docs/deployment.md) — production deployment guide
+- [`docs/setup-google-oauth.md`](docs/setup-google-oauth.md),
+  [`docs/setup-neon.md`](docs/setup-neon.md),
+  [`docs/setup-sms.md`](docs/setup-sms.md),
+  [`docs/setup-file-storage.md`](docs/setup-file-storage.md) — per-credential setup guides
+- [`docs/testing.md`](docs/testing.md) — how to run the tests, and what's still manual-only
+- [`docs/guide-admin.md`](docs/guide-admin.md),
+  [`docs/guide-teacher.md`](docs/guide-teacher.md),
+  [`docs/guide-student.md`](docs/guide-student.md) — per-role user guides
+- [`docs/pending-credentials.md`](docs/pending-credentials.md) — everything still waiting on an external credential
 
 ## Local setup
 
@@ -184,4 +239,14 @@ This is being built phase by phase (see the master prompt, Section 54):
   Every login through that exception is written to the audit log. Deactivate
   it from Admin → Users once the college-domain Admin is confirmed working.
 - Audit logs (`audit_logs` table) are append-only — nothing in the app ever
-  updates or deletes a row in that table.
+  updates or deletes a row in that table, and Admin → Audit Logs
+  (college-wide Admin only) is where they're actually searched and
+  filtered.
+- Standard security headers (`Content-Security-Policy`,
+  `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`,
+  `Referrer-Policy`, `Permissions-Policy`) are set for every response in
+  `next.config.ts`, and `poweredByHeader` is disabled.
+- Login, search, and import endpoints are rate-limited per IP
+  (`src/lib/rate-limit.ts`, wired in `proxy.ts`) on top of the per-account
+  lockout above — see that file's own doc comment for the multi-instance
+  caveat, and `docs/pending-credentials.md` for the upgrade path.

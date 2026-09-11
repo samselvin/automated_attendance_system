@@ -1,13 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { getSetting } from "@/lib/settings";
-import { calculateAttendancePercentage, attendanceLevel, type RecordStatus } from "@/lib/attendance/percentage";
+import { calculateAttendancePercentageFromCounts, attendanceLevel, type RecordStatus } from "@/lib/attendance/percentage";
 import { notifyUser } from "@/lib/notify";
 import { computeMissingAttendance } from "@/server/services/attendance-report.service";
 import { collegeDateString } from "@/lib/time";
 
-/** Section 32: "Optionally send low-attendance alerts to the student and
+/**
+ * Section 32: "Optionally send low-attendance alerts to the student and
  * Class Advisor on a configurable schedule" — the schedule itself is the
- * Vercel Cron entry that calls this route; this just does one pass. */
+ * Vercel Cron entry that calls this route; this just does one pass.
+ *
+ * Every per-student read below is a single batched query rather than one
+ * round trip per student — a college-wide daily cron over a per-student
+ * loop of sequential queries would risk the serverless function's time
+ * limit long before it reached a few thousand students.
+ */
 export async function runLowAttendanceAlerts(): Promise<{ checked: number; notified: number }> {
   const [approvedLeaveCounts, onDutyCounts, safeThreshold, warningThreshold] = await Promise.all([
     getSetting<string>("APPROVED_LEAVE_COUNTS_AS"),
@@ -15,67 +22,102 @@ export async function runLowAttendanceAlerts(): Promise<{ checked: number; notif
     getSetting<number>("ATTENDANCE_THRESHOLD_SAFE"),
     getSetting<number>("ATTENDANCE_THRESHOLD_WARNING"),
   ]);
+  const settings = {
+    approvedLeaveCounts: approvedLeaveCounts as "COUNT_AS_PRESENT" | "COUNT_AS_ABSENT" | "EXCLUDE_FROM_TOTAL",
+    onDutyCounts: onDutyCounts as "COUNT_AS_PRESENT" | "COUNT_AS_ABSENT" | "EXCLUDE_FROM_TOTAL",
+  };
 
-  const students = await prisma.student.findMany({ where: { status: "ACTIVE" } });
-  let notified = 0;
+  const students = await prisma.student.findMany({
+    where: { status: "ACTIVE" },
+    select: { id: true, userId: true, fullName: true, rollNumber: true },
+  });
+  if (students.length === 0) return { checked: 0, notified: 0 };
+  const studentIds = students.map((s) => s.id);
 
-  for (const student of students) {
-    const records = await prisma.attendanceRecord.findMany({
-      where: { studentId: student.id, session: { status: "HELD" } },
-      select: { status: true },
-    });
-    if (records.length === 0) continue;
+  const grouped = await prisma.attendanceRecord.groupBy({
+    by: ["studentId", "status"],
+    where: { studentId: { in: studentIds }, session: { status: "HELD" } },
+    _count: { _all: true },
+  });
+  const countsByStudent = new Map<string, Partial<Record<RecordStatus, number>>>();
+  for (const row of grouped) {
+    const bucket = countsByStudent.get(row.studentId) ?? {};
+    bucket[row.status as RecordStatus] = row._count._all;
+    countsByStudent.set(row.studentId, bucket);
+  }
 
-    const result = calculateAttendancePercentage(records.map((r) => r.status) as RecordStatus[], {
-      approvedLeaveCounts: approvedLeaveCounts as "COUNT_AS_PRESENT" | "COUNT_AS_ABSENT" | "EXCLUDE_FROM_TOTAL",
-      onDutyCounts: onDutyCounts as "COUNT_AS_PRESENT" | "COUNT_AS_ABSENT" | "EXCLUDE_FROM_TOTAL",
-    });
+  const flagged = students.flatMap((student) => {
+    const counts = countsByStudent.get(student.id);
+    if (!counts) return [];
+    const result = calculateAttendancePercentageFromCounts(counts, settings);
     const level = attendanceLevel(result.percentage, safeThreshold, warningThreshold);
-    if (level === "SAFE") continue;
+    if (level === "SAFE") return [];
+    return [{ student, percentage: Math.round(result.percentage * 100) / 100, level }];
+  });
 
-    const rounded = Math.round(result.percentage * 100) / 100;
+  if (flagged.length === 0) return { checked: students.length, notified: 0 };
+
+  // Latest ACTIVE enrollment per flagged student, in one query: rows come
+  // back sorted newest-first, so the first occurrence per studentId wins.
+  const enrollments = await prisma.studentEnrollment.findMany({
+    where: { studentId: { in: flagged.map((f) => f.student.id) }, status: "ACTIVE" },
+    orderBy: { effectiveFrom: "desc" },
+    select: { studentId: true, classId: true },
+  });
+  const classByStudent = new Map<string, string>();
+  for (const enr of enrollments) {
+    if (!classByStudent.has(enr.studentId)) classByStudent.set(enr.studentId, enr.classId);
+  }
+
+  const classIds = [...new Set(classByStudent.values())];
+  const advisorPostings = classIds.length
+    ? await prisma.classAdvisorPosting.findMany({
+        where: { classId: { in: classIds }, status: "ACTIVE" },
+        include: { teacher: true },
+      })
+    : [];
+  const advisorsByClass = new Map<string, typeof advisorPostings>();
+  for (const posting of advisorPostings) {
+    const list = advisorsByClass.get(posting.classId) ?? [];
+    list.push(posting);
+    advisorsByClass.set(posting.classId, list);
+  }
+
+  for (const { student, percentage, level } of flagged) {
     await notifyUser(
       student.userId,
       "LOW_ATTENDANCE",
-      `Attendance ${level === "CRITICAL" ? "critical" : "warning"}: ${rounded}%`,
-      `Your overall attendance is ${rounded}%, which is ${level === "CRITICAL" ? "below the critical threshold" : "in the warning range"}.`
+      `Attendance ${level === "CRITICAL" ? "critical" : "warning"}: ${percentage}%`,
+      `Your overall attendance is ${percentage}%, which is ${level === "CRITICAL" ? "below the critical threshold" : "in the warning range"}.`
     );
 
-    const enrollment = await prisma.studentEnrollment.findFirst({
-      where: { studentId: student.id, status: "ACTIVE" },
-      orderBy: { effectiveFrom: "desc" },
-    });
-    if (enrollment) {
-      const advisors = await prisma.classAdvisorPosting.findMany({
-        where: { classId: enrollment.classId, status: "ACTIVE" },
-        include: { teacher: true },
-      });
-      for (const advisor of advisors) {
-        await notifyUser(
-          advisor.teacher.userId,
-          "LOW_ATTENDANCE",
-          `${student.fullName} (${student.rollNumber}) — ${level.toLowerCase()} attendance`,
-          `${rounded}% overall attendance.`
-        );
-      }
+    const classId = classByStudent.get(student.id);
+    const advisors = classId ? (advisorsByClass.get(classId) ?? []) : [];
+    for (const advisor of advisors) {
+      await notifyUser(
+        advisor.teacher.userId,
+        "LOW_ATTENDANCE",
+        `${student.fullName} (${student.rollNumber}) — ${level.toLowerCase()} attendance`,
+        `${percentage}% overall attendance.`
+      );
     }
-    notified++;
   }
 
-  return { checked: students.length, notified };
+  return { checked: students.length, notified: flagged.length };
 }
 
 /** Section 37: "attendance missing (teachers)" — notifies each missing
  * session's scheduled teacher(s) once the daily cutoff has passed. */
 export async function runAttendanceMissingAlerts(dateStr: string = collegeDateString()): Promise<{ notified: number }> {
   const missing = await computeMissingAttendance(dateStr, null);
-  const teacherIds = new Set(missing.flatMap((m) => m.scheduledTeacherIds));
+  const teacherIds = [...new Set(missing.flatMap((m) => m.scheduledTeacherIds))];
+  if (teacherIds.length === 0) return { notified: 0 };
+
+  const teachers = await prisma.teacher.findMany({ where: { id: { in: teacherIds } } });
 
   let notified = 0;
-  for (const teacherId of teacherIds) {
-    const teacher = await prisma.teacher.findUnique({ where: { id: teacherId } });
-    if (!teacher) continue;
-    const mine = missing.filter((m) => m.scheduledTeacherIds.includes(teacherId));
+  for (const teacher of teachers) {
+    const mine = missing.filter((m) => m.scheduledTeacherIds.includes(teacher.id));
     await notifyUser(
       teacher.userId,
       "ATTENDANCE_MISSING",

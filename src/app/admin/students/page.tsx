@@ -11,10 +11,17 @@ import { listClasses } from "@/server/services/class.service";
 import { listAcademicYears } from "@/server/services/academic-year.service";
 import { CreateStudentForm } from "./create-form";
 
-export default async function StudentsPage() {
+export default async function StudentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; search?: string }>;
+}) {
   const session = await requireRolePage("ADMIN");
-  const [students, departments, regulations, classes, academicYears] = await Promise.all([
-    listStudents(session),
+  const { page: pageParam, search } = await searchParams;
+  const page = Math.max(Number(pageParam) || 1, 1);
+
+  const [{ students, total, pageSize }, departments, regulations, classes, academicYears] = await Promise.all([
+    listStudents(session, { page, search }),
     listDepartments(session),
     listRegulations(session),
     listClasses(session),
@@ -23,6 +30,14 @@ export default async function StudentsPage() {
 
   const currentYear = academicYears.find((y) => y.isCurrent) ?? academicYears[0];
   const semesters = currentYear?.semesters ?? [];
+  const totalPages = Math.max(Math.ceil(total / pageSize), 1);
+  const pageHref = (p: number) => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    return qs ? `/admin/students?${qs}` : "/admin/students";
+  };
 
   return (
     <div className="flex min-h-full flex-col">
@@ -39,6 +54,18 @@ export default async function StudentsPage() {
           classes={classes.map((c) => ({ id: c.id, label: `${c.department.code} ${c.yearOfStudy}-${c.section}` }))}
           semesters={semesters.map((s) => ({ id: s.id, label: `Semester ${s.number}` }))}
         />
+        <form method="get" className="flex gap-2">
+          <input
+            type="search"
+            name="search"
+            defaultValue={search ?? ""}
+            placeholder="Search by name or roll number"
+            className="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+          />
+          <button type="submit" className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700">
+            Search
+          </button>
+        </form>
         {students.length === 0 ? (
           <EmptyState title="No students yet" />
         ) : (
@@ -71,6 +98,25 @@ export default async function StudentsPage() {
             </div>
           </Card>
         )}
+        {totalPages > 1 ? (
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>
+              Page {page} of {totalPages} · {total} student{total === 1 ? "" : "s"}
+            </span>
+            <div className="flex gap-2">
+              {page > 1 ? (
+                <Link href={pageHref(page - 1)} className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium text-slate-700">
+                  Previous
+                </Link>
+              ) : null}
+              {page < totalPages ? (
+                <Link href={pageHref(page + 1)} className="rounded-lg border border-slate-300 px-3 py-1.5 font-medium text-slate-700">
+                  Next
+                </Link>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </main>
     </div>
   );

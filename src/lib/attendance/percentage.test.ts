@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { calculateAttendancePercentage, attendanceLevel } from "@/lib/attendance/percentage";
+import {
+  calculateAttendancePercentage,
+  calculateAttendancePercentageFromCounts,
+  attendanceLevel,
+} from "@/lib/attendance/percentage";
 
 const DEFAULT_SETTINGS = { approvedLeaveCounts: "COUNT_AS_ABSENT" as const, onDutyCounts: "COUNT_AS_PRESENT" as const };
 
@@ -44,6 +48,36 @@ describe("calculateAttendancePercentage", () => {
   it("returns an unrounded percentage for threshold comparison", () => {
     const result = calculateAttendancePercentage(["PRESENT", "PRESENT", "ABSENT"], DEFAULT_SETTINGS);
     expect(result.percentage).toBeCloseTo(66.666, 2);
+  });
+});
+
+describe("calculateAttendancePercentageFromCounts", () => {
+  it("matches the array-based calculation for the same statuses", () => {
+    const statuses = ["PRESENT", "PRESENT", "ABSENT", "APPROVED_LEAVE", "ON_DUTY"] as const;
+    const fromArray = calculateAttendancePercentage([...statuses], DEFAULT_SETTINGS);
+    const fromCounts = calculateAttendancePercentageFromCounts(
+      { PRESENT: 2, ABSENT: 1, APPROVED_LEAVE: 1, ON_DUTY: 1 },
+      DEFAULT_SETTINGS
+    );
+    expect(fromCounts).toEqual(fromArray);
+  });
+
+  it("ignores statuses with a zero or missing count", () => {
+    const result = calculateAttendancePercentageFromCounts({ PRESENT: 3, ABSENT: 0 }, DEFAULT_SETTINGS);
+    expect(result).toEqual({ applicableHours: 3, attendedHours: 3, percentage: 100 });
+  });
+
+  it("is 0% (not NaN) for an empty counts map", () => {
+    const result = calculateAttendancePercentageFromCounts({}, DEFAULT_SETTINGS);
+    expect(result.percentage).toBe(0);
+  });
+
+  it("respects EXCLUDE_FROM_TOTAL the same way the array version does", () => {
+    const result = calculateAttendancePercentageFromCounts(
+      { PRESENT: 1, APPROVED_LEAVE: 4 },
+      { approvedLeaveCounts: "EXCLUDE_FROM_TOTAL", onDutyCounts: "COUNT_AS_PRESENT" }
+    );
+    expect(result).toEqual({ applicableHours: 1, attendedHours: 1, percentage: 100 });
   });
 });
 

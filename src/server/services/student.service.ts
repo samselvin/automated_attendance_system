@@ -22,7 +22,15 @@ const STUDENT_INCLUDE = {
   },
 } as const;
 
-export async function listStudents(session: Session, filters: { departmentId?: string; classId?: string } = {}) {
+/**
+ * Section 49 requires pagination on lists at this scale ("thousands of
+ * students") — this used to return every matching student in one
+ * unbounded query on every load of the Admin Students page.
+ */
+export async function listStudents(
+  session: Session,
+  filters: { departmentId?: string; classId?: string; search?: string; page?: number; pageSize?: number } = {}
+) {
   const scope = adminDepartmentScope(session);
   if (filters.departmentId && !canAccessDepartment(session, filters.departmentId)) {
     throw new ForbiddenError("Outside your department scope");
@@ -34,14 +42,35 @@ export async function listStudents(session: Session, filters: { departmentId?: s
         ? {}
         : { departmentId: { in: scope } };
 
-  return prisma.student.findMany({
-    where: {
-      ...departmentFilter,
-      ...(filters.classId ? { enrollments: { some: { classId: filters.classId, status: "ACTIVE" } } } : {}),
-    },
-    include: STUDENT_INCLUDE,
-    orderBy: { rollNumber: "asc" },
-  });
+  const search = filters.search?.trim();
+  const where = {
+    ...departmentFilter,
+    ...(filters.classId ? { enrollments: { some: { classId: filters.classId, status: "ACTIVE" as const } } } : {}),
+    ...(search
+      ? {
+          OR: [
+            { fullName: { contains: search, mode: "insensitive" as const } },
+            { rollNumber: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
+  const pageSize = Math.min(Math.max(filters.pageSize ?? 50, 1), 200);
+  const page = Math.max(filters.page ?? 1, 1);
+
+  const [students, total] = await Promise.all([
+    prisma.student.findMany({
+      where,
+      include: STUDENT_INCLUDE,
+      orderBy: { rollNumber: "asc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.student.count({ where }),
+  ]);
+
+  return { students, total, page, pageSize };
 }
 
 export async function getStudent(session: Session, id: string) {

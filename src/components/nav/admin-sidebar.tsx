@@ -55,12 +55,19 @@ const SECTIONS: { title: string; items: { href: string; label: string }[] }[] = 
   },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ showAuditLogs = false }: { showAuditLogs?: boolean }) {
   const pathname = usePathname();
+  const sections = showAuditLogs
+    ? SECTIONS.map((section) =>
+        section.title === "Reports"
+          ? { ...section, items: [...section.items, { href: "/admin/audit-logs", label: "Audit Logs" }] }
+          : section
+      )
+    : SECTIONS;
 
   return (
     <nav className="hidden w-60 shrink-0 overflow-y-auto border-r border-slate-200 bg-white p-4 md:block">
-      {SECTIONS.map((section) => (
+      {sections.map((section) => (
         <div key={section.title} className="mb-5">
           <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{section.title}</p>
           <ul className="space-y-0.5">

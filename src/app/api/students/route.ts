@@ -9,6 +9,9 @@ export async function GET(req: Request) {
     return listStudents(session, {
       departmentId: url.searchParams.get("departmentId") ?? undefined,
       classId: url.searchParams.get("classId") ?? undefined,
+      search: url.searchParams.get("search") ?? undefined,
+      page: url.searchParams.get("page") ? Number(url.searchParams.get("page")) : undefined,
+      pageSize: url.searchParams.get("pageSize") ? Number(url.searchParams.get("pageSize")) : undefined,
     });
   });
 }

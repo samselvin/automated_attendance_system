@@ -160,6 +160,26 @@ export async function computeMissingAttendance(dateStr: string, departmentIds: s
   const collegeWideHoliday = holidays.some((h) => h.departmentId === null);
   const holidayDepartments = new Set(holidays.map((h) => h.departmentId).filter((d): d is string => !!d));
 
+  // One batch fetch of the day's sessions instead of a findFirst per
+  // (entry, slot) — a college-wide scan can be hundreds of entries, and
+  // this used to issue one sequential query per period (Section 49 requires
+  // efficient aggregate queries at this scale, not O(n) round trips).
+  const classIds = [...new Set(versions.map((v) => v.classId))];
+  const studentGroupIds = [...new Set(versions.flatMap((v) => v.entries.map((e) => e.studentGroupId).filter((id): id is string => !!id)))];
+  const existingSessions =
+    classIds.length || studentGroupIds.length
+      ? await prisma.attendanceSession.findMany({
+          where: {
+            date,
+            OR: [{ classId: { in: classIds } }, { studentGroupId: { in: studentGroupIds } }],
+          },
+          select: { classId: true, studentGroupId: true, periodNumber: true, status: true },
+        })
+      : [];
+  const sessionKey = (classId: string | null, studentGroupId: string | null, periodNumber: number) =>
+    `${classId ?? ""}|${studentGroupId ?? ""}|${periodNumber}`;
+  const sessionByKey = new Map(existingSessions.map((s) => [sessionKey(s.classId, s.studentGroupId, s.periodNumber), s]));
+
   const missing = [];
   for (const version of versions) {
     if (collegeWideHoliday || holidayDepartments.has(version.class.departmentId)) continue;
@@ -169,14 +189,8 @@ export async function computeMissingAttendance(dateStr: string, departmentIds: s
         const periodNumber = slot.bellScheduleSlot.periodNumber;
         if (periodNumber == null) continue;
 
-        const existing = await prisma.attendanceSession.findFirst({
-          where: {
-            classId: entry.studentGroupId ? null : version.classId,
-            studentGroupId: entry.studentGroupId,
-            date,
-            periodNumber,
-          },
-        });
+        const key = sessionKey(entry.studentGroupId ? null : version.classId, entry.studentGroupId, periodNumber);
+        const existing = sessionByKey.get(key);
         if (existing?.status === "HELD") continue;
 
         missing.push({
