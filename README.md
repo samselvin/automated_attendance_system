@@ -137,16 +137,18 @@ This is being built phase by phase (see the master prompt, Section 54):
       and `docs/setup-file-storage.md` cover every external credential;
       `docs/guide-admin.md`, `docs/guide-teacher.md` and `docs/guide-student.md`
       are the Section 55 user guides; `docs/pending-credentials.md` is the
-      single list of everything still waiting on a credential.
+      single list of everything still waiting on a credential. A **Reset
+      password** button on the Teachers and Students list pages (calling
+      the existing `POST /api/admin/users/:id/reset-password` endpoint,
+      confirmed and audit-logged the same way as password reset always
+      was) was added after Phase 8 closed out.
       **Not yet built**: an Admin screen for the college-wide
       `SystemSetting` rows (thresholds, cutoff time, Leave/OD counting —
       all genuinely configurable today, just via `db:studio` rather than a
       form; see `docs/guide-admin.md`); an automated integration/e2e test
       suite (Section 51 — every phase's end-to-end verification so far has
-      been manual, see `docs/testing.md`); a UI button for the existing
-      `POST /api/admin/users/:id/reset-password` endpoint; Leave/OD
-      document upload (schema-ready, no upload route/UI — see
-      `docs/setup-file-storage.md`).
+      been manual, see `docs/testing.md`); Leave/OD document upload
+      (schema-ready, no upload route/UI — see `docs/setup-file-storage.md`).
 
 ## Documentation
 

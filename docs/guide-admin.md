@@ -27,10 +27,10 @@ Do these once, roughly in this order (later steps depend on earlier ones):
    add individually, or use **Imports** (`/admin/imports`) for a CSV
    batch. Every new account gets a one-time temp password shown on
    screen — write it down or share it immediately, it isn't shown again.
-   A fresh temp password can be issued via
-   `POST /api/admin/users/:id/reset-password` — the endpoint is fully
-   authorized and audited, but no button calls it yet, so today this
-   needs an API request tool rather than a click in the UI.
+   Lost it, or need to force a reset? Use the **Reset password** button on
+   that person's row in the Teachers or Students list — it shows the new
+   temp password once, the same way creation does, and is fully audited
+   (`PASSWORD_RESET_BY_ADMIN`).
 6. **Class Advisors** (`/admin/class-advisors`) — post a teacher as the
    advisor for a class. This is a posting with extra permissions, not a
    separate login role — the same teacher account gains Class-Advisor

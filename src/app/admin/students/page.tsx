@@ -9,6 +9,7 @@ import { listDepartments } from "@/server/services/department.service";
 import { listRegulations } from "@/server/services/regulation.service";
 import { listClasses } from "@/server/services/class.service";
 import { listAcademicYears } from "@/server/services/academic-year.service";
+import { ResetPasswordButton } from "@/components/reset-password-button";
 import { CreateStudentForm } from "./create-form";
 
 export default async function StudentsPage({
@@ -78,6 +79,7 @@ export default async function StudentsPage({
                     <th className="px-4 py-2">Name</th>
                     <th className="px-4 py-2">Class</th>
                     <th className="px-4 py-2">Status</th>
+                    <th className="px-4 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -90,6 +92,9 @@ export default async function StudentsPage({
                       </td>
                       <td className="px-4 py-2">
                         <Badge label={s.status} variant={s.status === "ACTIVE" ? "safe" : "neutral"} />
+                      </td>
+                      <td className="px-4 py-2">
+                        <ResetPasswordButton userId={s.userId} name={s.fullName} />
                       </td>
                     </tr>
                   ))}

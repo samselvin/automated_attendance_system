@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { listTeachers } from "@/server/services/teacher.service";
 import { listDepartments } from "@/server/services/department.service";
+import { ResetPasswordButton } from "@/components/reset-password-button";
 import { CreateTeacherForm } from "./create-form";
 
 export default async function TeachersPage() {
@@ -29,6 +30,7 @@ export default async function TeachersPage() {
                     <th className="px-4 py-2">Email</th>
                     <th className="px-4 py-2">Department</th>
                     <th className="px-4 py-2">Status</th>
+                    <th className="px-4 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -40,6 +42,9 @@ export default async function TeachersPage() {
                       <td className="px-4 py-2 text-slate-700">{t.department.code}</td>
                       <td className="px-4 py-2">
                         <Badge label={t.status} variant={t.status === "ACTIVE" ? "safe" : "critical"} />
+                      </td>
+                      <td className="px-4 py-2">
+                        <ResetPasswordButton userId={t.userId} name={t.fullName} />
                       </td>
                     </tr>
                   ))}
