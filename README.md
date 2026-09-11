@@ -137,21 +137,32 @@ This is being built phase by phase (see the master prompt, Section 54):
       and `docs/setup-file-storage.md` cover every external credential;
       `docs/guide-admin.md`, `docs/guide-teacher.md` and `docs/guide-student.md`
       are the Section 55 user guides; `docs/pending-credentials.md` is the
-      single list of everything still waiting on a credential. Two things
-      were added after Phase 8 closed out: a **Reset password** button on
-      the Teachers and Students list pages (calling the existing
-      `POST /api/admin/users/:id/reset-password` endpoint, confirmed and
-      audit-logged the same way as password reset always was), and an
-      Admin **Settings** screen (`/admin/settings`, college-wide Admin
-      only, same reasoning as Audit Logs — these rules have no
+      single list of everything still waiting on a credential. Three
+      things were added after Phase 8 closed out: a **Reset password**
+      button on the Teachers and Students list pages (calling the
+      existing `POST /api/admin/users/:id/reset-password` endpoint,
+      confirmed and audit-logged the same way as password reset always
+      was); an Admin **Settings** screen (`/admin/settings`, college-wide
+      Admin only, same reasoning as Audit Logs — these rules have no
       per-department scope) editing every `SystemSetting` row this app
       actually reads, grouped by area (Attendance, Leave & On-Duty,
       Marks, SMS), with the rows that are seeded but not yet consulted by
       any business logic (`TIMEZONE`, `TIMETABLE_TYPE`,
       `LEAVE_APPROVAL_MODE`, `OD_APPROVAL_MODE`, `PARENT_SMS_LANGUAGE`)
-      clearly labelled "Not used yet" rather than hidden. Every save is
+      clearly labelled "Not used yet" rather than hidden, every save
       validated against a per-setting schema (`src/lib/settings-schema.ts`)
-      and audit-logged as `SETTINGS_CHANGED` with the old and new value.
+      and audit-logged as `SETTINGS_CHANGED` with the old and new value;
+      and a **Weekly Attendance Report** (`/admin/reports`, and from a
+      Class Advisor's own Home screen for their own class) that
+      reproduces the department's existing paper weekly attendance
+      register exactly — daily hours Monday to Friday, a weekly total,
+      and a running cumulative total since the semester began, both
+      computed from real attendance history and respecting the college's
+      configured Leave/OD counting rules the same way every other report
+      does. The paper form's own percentage bands (`>80`, `75–80`,
+      `70–75`, `65–70`, `below 60`) left a 60–65% gap that would go
+      uncounted once a real percentage lands there; the automated report
+      closes it with five contiguous bands ending in "below 65%" instead.
       **Not yet built**: an automated integration/e2e test suite
       (Section 51 — every phase's end-to-end verification so far has been
       manual, see `docs/testing.md`); Leave/OD document upload

@@ -51,6 +51,10 @@ class for as long as the posting is active:
 - Approving a Leave/OD request for a date where attendance was **already
   taken** automatically updates that attendance record retroactively — you
   don't need to go back and re-mark anything by hand.
+- From your Home screen, **Weekly report** next to your class opens the
+  same Weekly Attendance Report format the department already fills in on
+  paper — daily hours for the week, weekly and cumulative totals, and the
+  percentage-band summary — ready to print for signing.
 
 You monitor the class; you don't take every hour's attendance yourself —
 whoever is actually scheduled (or substituting) for a given period takes

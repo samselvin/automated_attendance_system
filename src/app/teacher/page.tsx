@@ -25,7 +25,7 @@ export default async function TeacherHome() {
 
   const missingCount = schedule.filter((s) => s.attendanceStatus !== "HELD" && s.scheduledStart && now > s.scheduledStart).length;
 
-  let advisorSummary: { className: string; studentCount: number; pendingLeave: number }[] = [];
+  let advisorSummary: { classId: string; className: string; studentCount: number; pendingLeave: number }[] = [];
   if (advisorClassIds.length > 0) {
     advisorSummary = await Promise.all(
       advisorClassIds.map(async (classId) => {
@@ -36,7 +36,7 @@ export default async function TeacherHome() {
             where: { status: "PENDING", student: { enrollments: { some: { classId, status: "ACTIVE" } } } },
           }),
         ]);
-        return { className: `${cls.yearOfStudy}-${cls.section}`, studentCount, pendingLeave };
+        return { classId, className: `${cls.yearOfStudy}-${cls.section}`, studentCount, pendingLeave };
       })
     );
   }
@@ -88,7 +88,7 @@ export default async function TeacherHome() {
             <CardHeader title="My Class (Class Advisor)" />
             <ul className="space-y-2">
               {advisorSummary.map((s) => (
-                <li key={s.className} className="flex items-center justify-between text-sm">
+                <li key={s.classId} className="flex items-center justify-between text-sm">
                   <span className="font-medium text-slate-900">{s.className}</span>
                   <span className="text-slate-500">
                     {s.studentCount} students · {s.pendingLeave} pending leave/OD
@@ -96,9 +96,16 @@ export default async function TeacherHome() {
                 </li>
               ))}
             </ul>
-            <Link href="/teacher/leave-requests" className="mt-2 inline-block text-xs font-medium text-slate-600 underline">
-              Review leave/OD requests
-            </Link>
+            <div className="mt-2 flex flex-wrap gap-3">
+              <Link href="/teacher/leave-requests" className="text-xs font-medium text-slate-600 underline">
+                Review leave/OD requests
+              </Link>
+              {advisorSummary.map((s) => (
+                <Link key={s.classId} href={`/teacher/class-report?classId=${s.classId}`} className="text-xs font-medium text-slate-600 underline">
+                  Weekly report — {s.className}
+                </Link>
+              ))}
+            </div>
           </Card>
         ) : null}
       </main>

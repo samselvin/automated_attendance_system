@@ -7,7 +7,7 @@ npm test          # run once
 npm run test:watch
 ```
 
-135 Vitest tests cover every pure calculation module — the parts of the
+140 Vitest tests cover every pure calculation module — the parts of the
 system where a subtle bug is easiest to introduce silently and hardest to
 notice by eye:
 
@@ -32,6 +32,8 @@ notice by eye:
 - `src/lib/rate-limit.test.ts` — the sliding-window rate limiter (Phase 8)
 - `src/lib/settings-schema.test.ts` — per-setting validation, and that every
   setting's own fallback value satisfies its own schema
+- `src/lib/attendance/weekly-report.test.ts` — Monday-snapping, the five
+  weekday dates, and the percentage bands covering 0–100% with no gap
 - `src/lib/env.test.ts`, `src/lib/time.test.ts`, `src/lib/import/validators.test.ts`
 
 Run `npm test` before every commit that touches any of these modules —

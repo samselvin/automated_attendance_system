@@ -63,10 +63,17 @@ cutoff, and a few other college-wide rules can be changed any time from
   instead, with Admin as a fallback.
 - **Substitutions** (`/admin/substitutions`) — assign a substitute teacher
   for a specific date/period when the scheduled teacher is unavailable.
-- **Reports & Export** (`/admin/reports`) — a class's attendance report
-  (with CSV download and a print-friendly view) and a college/department
-  low-attendance list. Excel/PDF export aren't built yet — CSV and the
-  browser's own Print are what's available.
+- **Reports & Export** (`/admin/reports`) — a **Weekly Attendance Report**
+  matching the department's existing paper form exactly (daily hours for
+  Monday–Friday, a weekly total, and a running cumulative total since the
+  semester began, plus the percentage-band summary and Class
+  Advisor/HOD/Principal signature lines), a class's attendance report
+  over any date range, and a college/department low-attendance list — all
+  with CSV download, and the weekly and class reports also have a
+  print-friendly view. A class's own active Class Advisor can generate
+  its Weekly Attendance Report too, from their Home screen. Excel/PDF
+  export aren't built yet — CSV and the browser's own Print are what's
+  available.
 - **Audit Logs** (`/admin/audit-logs`) — **visible only to a college-wide
   Admin** (one whose role isn't scoped to a single department), since log
   entries can span every department and don't carry a reliable
