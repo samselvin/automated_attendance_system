@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DEFAULT_FIRST_HOUR_ABSENCE_TEMPLATE } from "@/lib/sms/template";
 
 /**
  * Single source of truth for every `SystemSetting` row this app actually
@@ -125,10 +126,10 @@ export const SETTINGS_SCHEMA: SettingDef[] = [
   {
     key: "SMS_TEMPLATE_FIRST_HOUR_ABSENCE",
     label: "First-hour absence SMS text",
-    help: "Must match the DLT-registered template exactly, including every {{variable}} — see docs/setup-sms.md.",
+    help: "Plain text with {student_name}, {roll_number}, {date} and {college_name} fill-ins — see docs/setup-sms.md. If your provider needs a DLT-registered template, this text must match it exactly.",
     group: "SMS",
     type: "text",
-    fallback: "Your ward {{studentName}} ({{rollNumber}}) was marked absent for the first period today, {{date}}.",
+    fallback: DEFAULT_FIRST_HOUR_ABSENCE_TEMPLATE,
   },
 ];
 

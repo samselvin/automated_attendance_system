@@ -10,7 +10,7 @@ describe("renderTemplate", () => {
       college_name: "PSN CET",
     });
     expect(result).toBe(
-      "Dear Parent, your ward D. SamSelvin (23AIDS001) was marked absent in the first hour on 11-09-2026. - PSN CET"
+      "Dear Parent, your son/daughter D. SamSelvin (23AIDS001) was marked absent in the first hour today, 11-09-2026. - PSN CET"
     );
   });
 

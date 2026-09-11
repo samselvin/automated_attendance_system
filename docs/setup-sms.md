@@ -1,62 +1,92 @@
-# SMS provider and DLT template setup
+# SMS provider setup
 
 First-hour absence SMS (Section 33) is fully built end to end behind an
-interface (`src/lib/sms/provider.ts`) but ships with `SMS_PROVIDER=dev` by
-default, which only **logs** each message instead of sending it — this is
-the documented exception in the master prompt's build plan (Section 54):
-the SMS gateway itself needs a real, paid, DLT-registered credential this
-project was never given.
+interface (`src/lib/sms/provider.ts`) with three implementations: `dev`
+(logs instead of sending), `textbee` (configured — see below), and a
+generic DLT-gateway HTTP provider for a real bulk-SMS service later if the
+college outgrows a single phone's SIM.
 
-## Why DLT registration (India-specific)
+## Currently configured: TextBee
 
-Indian telecom regulation (TRAI's Distributed Ledger Technology framework)
-requires every transactional/promotional SMS sender to pre-register their
-sender ID and exact message templates before any provider will deliver
-them. You cannot skip this by picking a different provider — every
-DLT-registered gateway enforces the same rule. Budget lead time for this;
-approval is not instant.
+[TextBee](https://textbee.dev) turns an Android phone into an SMS gateway
+using its own SIM — you pair a phone with the TextBee app, and the app's
+API then sends texts through that phone exactly as if you'd typed them
+yourself. No DLT registration, no sender-ID approval, no per-message
+template review.
 
-## Steps
+```
+SMS_PROVIDER="textbee"
+TEXTBEE_API_KEY="txb_..."       # from the TextBee dashboard
+TEXTBEE_DEVICE_ID="..."         # the paired phone's device ID
+```
+
+Both are already set in this project's `.env`. To confirm the pairing is
+still healthy without sending anything, check the device's status:
+
+```bash
+curl -H "x-api-key: $TEXTBEE_API_KEY" https://api.textbee.dev/api/v1/gateway/devices/$TEXTBEE_DEVICE_ID
+```
+
+### Trade-offs, honestly
+
+- **No DLT paperwork** — the biggest reason to start here.
+- **The phone must stay on, connected, and running the TextBee app.** If
+  it's off or offline, sends fail (they'll retry — see below — but won't
+  succeed until the phone is back).
+- **It's a personal SIM, not a provisioned bulk sender.** Carriers watch
+  retail SIMs for spam-like bursts of outbound texts; sending to a very
+  large number of parents in a short window risks the carrier throttling
+  or flagging that SIM. Fine for a single department's daily first-hour
+  absences; reconsider before scaling to the whole college's every period.
+- Each recipient counts against the TextBee plan's daily/monthly message
+  cap (429 if exceeded — the app retries up to 3 times, then records the
+  failure on the `SmsMessage` row rather than silently losing it).
+
+## Editing the message text
+
+Admin → **Settings** → SMS → "First-hour absence SMS text" — no code
+change or redeploy needed. Fill-ins available: `{student_name}`,
+`{roll_number}`, `{date}`, `{college_name}` (single braces — this is a
+plain find-and-replace, not a templating language). The seeded default:
+
+> Dear Parent, your son/daughter {student_name} ({roll_number}) was
+> marked absent in the first hour today, {date}. - {college_name}
+
+Every change is validated, saved, and audit-logged as `SETTINGS_CHANGED`
+— see `docs/guide-admin.md`.
+
+## Switching to a real bulk DLT gateway later
+
+If the college later wants a provisioned bulk-SMS service (MSG91,
+Kaleyra, Gupshup, etc.) instead of a phone's SIM — usually once sending
+volume outgrows what a personal SIM can handle — that path needs India's
+DLT registration first:
 
 1. **Register as a Principal Entity** on the DLT platform for your telecom
-   circle (each of the major Indian telcos participates in a shared DLT
-   ecosystem — most SMS providers below can walk you through their
-   specific onboarding).
+   circle (most gateways walk you through this as part of onboarding).
 2. **Register a Sender ID** (a 6-character alphanumeric header, e.g.
-   `PSNCET`) under that entity.
-3. **Register the exact message template** used by this app. The seeded
-   default lives in `SystemSetting` under the key
-   `SMS_TEMPLATE_FIRST_HOUR_ABSENCE` (seeded in `prisma/seed.ts` from
-   `DEFAULT_FIRST_HOUR_ABSENCE_TEMPLATE`) — register that literal text
-   (with its `{{variable}}` placeholders) as your DLT template, note the
-   **DLT Template ID** Approval gives you, and put it in
-   `SMS_TEMPLATE_ID_FIRST_HOUR_ABSENCE`. If your college needs different
-   wording, register your own text on DLT first, then update the
-   `SystemSetting` row to match exactly — a mismatch between the DLT
+   `PSNCET`).
+3. **Register the exact text** currently set under Admin → Settings → SMS
+   as your DLT template (with its `{variable}` placeholders exactly as
+   written), and put the **DLT Template ID** DLT approval gives you into
+   `SMS_TEMPLATE_ID_FIRST_HOUR_ABSENCE`. A mismatch between the registered
    template and what the app actually sends is the #1 reason real
-   messages get silently rejected by the gateway.
-4. **Pick an SMS gateway** that accepts DLT-registered sends over a plain
-   HTTP API — MSG91 is what `HttpSmsProvider` in
-   `src/lib/sms/provider.ts` is shaped for by default (a POST with
-   `sender`, `template_id`, and a recipients array), but any similar
-   gateway (Kaleyra, Gupshup, Textlocal, etc.) works if you adapt that one
-   file — nothing else in the app talks to the gateway directly, it only
-   uses the `SmsProvider` interface.
-5. **Set the environment variables**:
+   messages get silently rejected by a DLT gateway.
+4. **Set the environment variables**:
    ```
-   SMS_PROVIDER="msg91"              # anything other than "dev" selects HttpSmsProvider
+   SMS_PROVIDER="msg91"              # anything other than "dev"/"textbee" selects the generic HttpSmsProvider
    SMS_API_KEY="..."
    SMS_SENDER_ID="PSNCET"
    SMS_DLT_ENTITY_ID="..."
    SMS_TEMPLATE_ID_FIRST_HOUR_ABSENCE="..."
    SMS_HTTP_ENDPOINT="https://api.msg91.com/api/v5/flow/"   # or your gateway's endpoint
    ```
-6. **Test with a real number** in a staging environment before relying on
-   it — send one attendance submission for a student whose first period
-   you mark ABSENT and whose parent contact is your own test phone number,
-   and confirm the SMS actually arrives with the right text.
+   `HttpSmsProvider` in `src/lib/sms/provider.ts` is shaped for MSG91's
+   Flow API by default — adapt that one class if your gateway's
+   request/response shape differs. Nothing else in the app talks to a
+   gateway directly, it only ever uses the `SmsProvider` interface.
 
-## What's already handled for you
+## What's already handled for you, regardless of provider
 
 - One SMS per student per day, enforced by `SmsMessage.dedupeKey`'s unique
   constraint — a correction after the first SMS never sends a second one
@@ -65,10 +95,13 @@ approval is not instant.
   dropped or crashed on.
 - Provider failure doesn't fail the attendance submission — SMS sending
   happens in `after()` (`src/lib/jobs/after.ts`), fully decoupled from the
-  request/response cycle.
+  request/response cycle, and retries up to 3 times before being recorded
+  as failed.
 
-## Known gap
+## Testing
 
-No real `SMS_API_KEY` / DLT entity / template ID has been provided.
-`SMS_PROVIDER=dev` is what's configured today — see
-`docs/pending-credentials.md`.
+Mark a student ABSENT for their first period, with their parent contact
+set to a real phone number you can check (your own, for a test), and
+confirm the SMS arrives with the wording you expect. Check
+`SmsMessage.providerResponse` in the database (or Prisma Studio) if it
+doesn't — that's the raw response TextBee (or your gateway) sent back.

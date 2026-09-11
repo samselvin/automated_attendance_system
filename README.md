@@ -188,6 +188,17 @@ This is being built phase by phase (see the master prompt, Section 54):
         Students see only events relevant to them, matched by a pure,
         unit-tested predicate (`src/lib/events/audience.ts`) — surfaced on
         the student Home screen and at `/student/events`.
+      - A show/hide eye icon on every password field (login, and the
+        current/new/confirm fields on change-password) via a shared
+        `PasswordInput` (`src/components/ui/password-input.tsx`).
+      - **Parent SMS is now live**, not just logged to the console: a
+        `TextBeeSmsProvider` (`src/lib/sms/provider.ts`) sends first-hour
+        absence texts through a paired Android phone's own SIM via
+        [TextBee](https://textbee.dev) — no DLT registration needed, at
+        the cost of being a personal-SIM sender rather than a provisioned
+        bulk gateway (see `docs/setup-sms.md` for that trade-off). The
+        default message wording also changed from "your ward" to "your
+        son/daughter", editable anytime from Admin → Settings → SMS.
 
 ## Documentation
 

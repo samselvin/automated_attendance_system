@@ -5,7 +5,7 @@ export function renderTemplate(template: string, vars: Record<string, string>): 
 }
 
 export const DEFAULT_FIRST_HOUR_ABSENCE_TEMPLATE =
-  "Dear Parent, your ward {student_name} ({roll_number}) was marked absent in the first hour on {date}. - {college_name}";
+  "Dear Parent, your son/daughter {student_name} ({roll_number}) was marked absent in the first hour today, {date}. - {college_name}";
 
 export function buildDedupeKey(studentId: string, dateISO: string, messageType: string): string {
   return `${studentId}:${dateISO}:${messageType}`;
