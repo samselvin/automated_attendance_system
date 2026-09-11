@@ -14,13 +14,19 @@ const credentialsProvider = Credentials({
     email: { label: "Email", type: "email" },
     password: { label: "Password", type: "password" },
   },
-  // Email/password login is college-domain accounts only — no bootstrap
-  // exception here, unlike Google (Section 6's exception is Google-only).
+  // Email/password login is college-domain accounts only, with one
+  // exception: an address explicitly listed in INITIAL_ADMIN_EMAILS (the
+  // same allowlist used for the Google bootstrap exception) may also use a
+  // password — a deliberate, per-address opt-in rather than opening
+  // password login to any personal-email domain.
   async authorize(credentials) {
     const email = String(credentials?.email ?? "").trim().toLowerCase();
     const password = String(credentials?.password ?? "");
     if (!email || !password) return null;
-    if (!isAllowedDomain(email)) return null;
+
+    const domainAllowed = isAllowedDomain(email);
+    const bootstrapException = isBootstrapAdminEmail(email);
+    if (!domainAllowed && !bootstrapException) return null;
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || user.status !== "ACTIVE" || !user.passwordHash) return null;
@@ -57,6 +63,17 @@ const credentialsProvider = Credentials({
       where: { id: user.id },
       data: { failedLoginAttempts: 0, lockedUntil: null, lastLoginAt: new Date() },
     });
+
+    if (bootstrapException && !domainAllowed) {
+      await writeAuditLog({
+        actorUserId: user.id,
+        actorRole: "ADMIN",
+        action: "BOOTSTRAP_ADMIN_LOGIN",
+        entityType: "User",
+        entityId: user.id,
+        context: { email, note: "Password login via non-domain bootstrap admin exception" },
+      });
+    }
 
     return { id: user.id, email: user.email };
   },

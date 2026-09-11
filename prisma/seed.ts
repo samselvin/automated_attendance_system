@@ -226,14 +226,15 @@ async function main() {
 
     const onAllowedDomain = allowedDomains.includes(domain ?? "");
 
-    if (!onAllowedDomain) {
-      // The personal-email bootstrap exception (Section 6) is Google-only —
-      // it never gets a password.
-      console.log(`  Bootstrap admin (non-domain, personal address): ${lower} -> college-wide ADMIN (Google sign-in only)`);
-      continue;
-    }
-
-    console.log(`  Bootstrap admin: ${lower} -> ADMIN${isCollegeDomainHod ? ` (scoped to ${aids.code})` : " (college-wide)"}`);
+    // A non-domain bootstrap address may also use password login, but only
+    // because it is explicitly listed in INITIAL_ADMIN_EMAILS — this is a
+    // per-address opt-in, not a domain-wide one (see auth.ts's Credentials
+    // provider).
+    console.log(
+      `  Bootstrap admin: ${lower} -> ADMIN${isCollegeDomainHod ? ` (scoped to ${aids.code})` : " (college-wide)"}${
+        onAllowedDomain ? "" : " [non-domain bootstrap exception]"
+      }`
+    );
 
     if (!user.passwordHash) {
       const tempPassword = generateTempPassword();
