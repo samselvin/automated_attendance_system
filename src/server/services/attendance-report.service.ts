@@ -63,6 +63,18 @@ export async function getStudentAttendancePercentage(
  * periods for the date against whichever sessions actually exist.
  */
 export async function listMissingAttendance(session: Session, dateStr: string, filters: { departmentId?: string } = {}) {
+  if (filters.departmentId && !canAccessDepartment(session, filters.departmentId)) {
+    throw new ForbiddenError("Outside your department scope");
+  }
+  if (!isAdmin(session)) throw new UnauthorizedError("Only Admin can view the missing-attendance report");
+
+  const scope = filters.departmentId ? [filters.departmentId] : null;
+  return computeMissingAttendance(dateStr, scope);
+}
+
+/** Core query, with no session/RBAC dependency, so the daily cron job can
+ * call it directly (it authenticates via CRON_SECRET, not a user session). */
+export async function computeMissingAttendance(dateStr: string, departmentIds: string[] | null) {
   const date = new Date(`${dateStr}T00:00:00.000Z`);
   const todayStr = collegeDateString();
   const isToday = dateStr === todayStr;
@@ -72,16 +84,7 @@ export async function listMissingAttendance(session: Session, dateStr: string, f
   const cutoff = await getSetting<string>("ATTENDANCE_DAILY_CUTOFF");
   if (isToday && !isPastDailyCutoff(collegeTimeString(), cutoff)) return [];
 
-  if (filters.departmentId && !canAccessDepartment(session, filters.departmentId)) {
-    throw new ForbiddenError("Outside your department scope");
-  }
-  const scope = filters.departmentId
-    ? [filters.departmentId]
-    : isAdmin(session)
-      ? null // null = college-wide, resolved below
-      : [];
-  if (!isAdmin(session)) throw new UnauthorizedError("Only Admin can view the missing-attendance report");
-
+  const scope = departmentIds;
   const weekday = WEEKDAYS[date.getUTCDay()];
 
   const versions = await prisma.timetableVersion.findMany({

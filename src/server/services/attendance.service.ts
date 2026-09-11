@@ -1,11 +1,14 @@
 import type { Session } from "next-auth";
 import type { Prisma, Weekday } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { canAccessDepartment, isAdmin, ForbiddenError as ApiForbiddenError, UnauthorizedError } from "@/lib/rbac";
 import { getSetting } from "@/lib/settings";
 import { collegeDateString, collegeTimeString } from "@/lib/time";
 import { isWindowOpenForSubmission } from "@/lib/attendance/window";
+import { isFirstNonCancelledPeriod } from "@/lib/attendance/first-hour";
+import { runAfterResponse } from "@/lib/jobs/after";
+import { queueFirstHourAbsenceSms, processQueuedSms } from "@/server/services/sms.service";
 import { BadRequestError, ConflictError, NotFoundError } from "@/lib/api-utils";
 import type { SubmitAttendanceInput, CorrectAttendanceInput } from "@/lib/validation/attendance";
 
@@ -259,9 +262,12 @@ export async function submitAttendance(
   ctx: { ipAddress?: string; userAgent?: string }
 ) {
   const date = input.date;
+  let capturedEntry: LoadedEntry | null = null;
+  const absentStudentIds: string[] = [];
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const entry = await loadEntryOrThrow(tx, input.timetableEntryId);
+    capturedEntry = entry;
     const { actingTeacherId } = await authorizeForEntry(session, tx, entry, date);
     await verifyDateMatchesEntry(tx, entry, date);
 
@@ -326,6 +332,8 @@ export async function submitAttendance(
     for (const record of input.records) {
       const enrollment = enrollmentByStudent.get(record.studentId);
       if (!enrollment) throw new BadRequestError(`Student ${record.studentId} is not enrolled in this class`);
+
+      if (record.status === "ABSENT") absentStudentIds.push(record.studentId);
 
       let leaveRequestId: string | null = null;
 
@@ -413,8 +421,68 @@ export async function submitAttendance(
       tx
     );
 
-    return { sessionIds: sessions.map((s) => s.id), isLateSubmission };
-  });
+    return { sessionIds: sessions.map((s) => s.id), isLateSubmission, sessions };
+  }, LONG_TRANSACTION_OPTIONS);
+
+  // Section 33: fires immediately in the same flow but must never block or
+  // break the response — deferred to run after the response is sent.
+  if (capturedEntry && absentStudentIds.length > 0) {
+    const entryForSms = capturedEntry;
+    const submittedPeriodNumbers = result.sessions.map((s) => s.periodNumber);
+    runAfterResponse(() => triggerFirstHourSmsForAbsentees(entryForSms, date, absentStudentIds, submittedPeriodNumbers));
+  }
+
+  return { sessionIds: result.sessionIds, isLateSubmission: result.isLateSubmission };
+}
+
+/** Runs off the request path (via `after()`). Resolves, per department
+ * simplification noted below, whether the period just submitted is each
+ * absent student's first scheduled period of the day, and if so queues and
+ * sends the SMS. Independent DB calls, not the original transaction — a
+ * failure here never touches the attendance data already committed. */
+async function triggerFirstHourSmsForAbsentees(
+  entry: LoadedEntry,
+  date: Date,
+  absentStudentIds: string[],
+  submittedPeriodNumbers: number[]
+): Promise<void> {
+  try {
+    const classId = entry.timetableVersion.classId;
+    if (entry.timetableVersion.timetableType !== "WEEKDAY" || !entry.weekday) return;
+
+    // Simplification: "first hour" is resolved from the class's own
+    // (non-group) timetable entries. A student whose actual first period
+    // is an elective/lab-batch-only session is not covered by this pass —
+    // documented as a follow-up refinement, not silently wrong for the
+    // common case this college uses.
+    const classEntries = await prisma.timetableEntry.findMany({
+      where: {
+        weekday: entry.weekday,
+        studentGroupId: null,
+        timetableVersion: { classId, effectiveFrom: { lte: date }, OR: [{ effectiveTo: null }, { effectiveTo: { gte: date } }] },
+      },
+      include: { slots: { include: { bellScheduleSlot: true } } },
+    });
+    const allPeriods = classEntries.flatMap((e) =>
+      e.slots.map((s) => s.bellScheduleSlot.periodNumber).filter((p): p is number => p != null)
+    );
+    if (allPeriods.length === 0) return;
+
+    const cancelledSessions = await prisma.attendanceSession.findMany({
+      where: { classId, date, status: "CANCELLED", periodNumber: { in: allPeriods } },
+    });
+    const cancelledPeriods = new Set(cancelledSessions.map((s) => s.periodNumber));
+
+    const isFirstHour = submittedPeriodNumbers.some((p) => isFirstNonCancelledPeriod(p, allPeriods, cancelledPeriods));
+    if (!isFirstHour) return;
+
+    for (const studentId of absentStudentIds) {
+      const smsId = await prisma.$transaction((tx) => queueFirstHourAbsenceSms(tx, studentId, date));
+      if (smsId) await processQueuedSms(smsId);
+    }
+  } catch (err) {
+    console.error("triggerFirstHourSmsForAbsentees failed:", err);
+  }
 }
 
 export async function correctAttendance(

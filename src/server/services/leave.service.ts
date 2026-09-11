@@ -1,6 +1,6 @@
 import type { Session } from "next-auth";
 import type { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { canAccessDepartment, isAdmin, isTeacher, ForbiddenError, UnauthorizedError } from "@/lib/rbac";
 import { isActiveClassAdvisor } from "@/lib/class-advisor";
@@ -20,7 +20,14 @@ async function getActiveEnrollment(tx: Prisma.TransactionClient, studentId: stri
   });
 }
 
-async function notifyApprovers(tx: Prisma.TransactionClient, classId: string, departmentId: string, title: string, message: string) {
+async function notifyApprovers(
+  tx: Prisma.TransactionClient,
+  classId: string,
+  departmentId: string,
+  notificationType: "LEAVE_SUBMITTED" | "OD_SUBMITTED",
+  title: string,
+  message: string
+) {
   const advisors = await tx.classAdvisorPosting.findMany({
     where: { classId, status: "ACTIVE" },
     include: { teacher: true },
@@ -30,7 +37,7 @@ async function notifyApprovers(tx: Prisma.TransactionClient, classId: string, de
   });
   const recipientUserIds = new Set([...advisors.map((a) => a.teacher.userId), ...admins.map((a) => a.userId)]);
   for (const userId of recipientUserIds) {
-    await notifyUser(userId, "LEAVE_SUBMITTED", title, message, undefined, tx);
+    await notifyUser(userId, notificationType, title, message, undefined, tx);
   }
 }
 
@@ -122,6 +129,7 @@ export async function submitLeaveRequest(
       tx,
       enrollment.classId,
       student.departmentId,
+      input.type === "ON_DUTY" ? "OD_SUBMITTED" : "LEAVE_SUBMITTED",
       `${input.type} request submitted`,
       `${student.fullName} (${student.rollNumber}) requested ${input.type} from ${input.fromDate.toDateString()} to ${input.toDate.toDateString()}.`
     );
@@ -226,7 +234,7 @@ export async function decideLeaveOrMedical(
     );
 
     return updated;
-  });
+  }, LONG_TRANSACTION_OPTIONS);
 }
 
 /** Dual-approval flow for ON_DUTY — both the Class Advisor and the HOD must
@@ -319,5 +327,5 @@ export async function decideOdApproval(
     );
 
     return updated;
-  });
+  }, LONG_TRANSACTION_OPTIONS);
 }

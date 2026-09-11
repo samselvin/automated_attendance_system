@@ -1,10 +1,11 @@
 import type { Session } from "next-auth";
 import { RoleName, type Prisma, type PrismaClient } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { adminDepartmentScope, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
 import { BadRequestError, ConflictError, NotFoundError } from "@/lib/api-utils";
 import { generateTempPassword, hashPassword } from "@/lib/password";
+import { notifyUser } from "@/lib/notify";
 import { parseCsvText, applyColumnMapping } from "@/lib/import/csv";
 import {
   validateStudentRow,
@@ -369,8 +370,17 @@ export async function confirmImportJob(
       tx
     );
 
+    await notifyUser(
+      session.user.id,
+      "IMPORT_COMPLETED",
+      `${job.entityType.toLowerCase()} import completed`,
+      `${imported} row(s) imported successfully.`,
+      undefined,
+      tx
+    );
+
     return updatedJob;
-  });
+  }, LONG_TRANSACTION_OPTIONS);
 
   return { job: updatedJob, issuedCredentials };
 }

@@ -42,7 +42,21 @@ This is being built phase by phase (see the master prompt, Section 54):
       attendance-percentage calculation (configurable Leave/OD counting),
       and a missing-attendance report that diffs the timetable's expected
       periods against what was actually held
-- [ ] Phase 5 — notifications, first-hour parent SMS
+- [x] **Phase 5** — SMS provider abstraction (a `dev` provider that logs
+      instead of sending, plus a generic HTTP provider shaped for MSG91's
+      Flow API as the default real gateway — SMS_PROVIDER/SMS_API_KEY/etc.
+      are the exact credential this needs and don't exist yet, per Section
+      54's documented exception), first-hour absence SMS wired into
+      attendance submission (fires off the request path via Next's
+      `after()`, with a fire-and-forget fallback so a `after()` failure can
+      never break attendance submission — Section 33's explicit
+      requirement), per-student-per-day de-duplication, a recorded
+      "no parent contact" case, low-attendance and attendance-missing
+      alert jobs on Vercel Cron (`vercel.json`), and IMPORT_COMPLETED /
+      OD_SUBMITTED notification wiring. Web push is deferred to Phase 8 —
+      it needs the PWA service-worker/installability work to actually be
+      testable, so building the backend alone now would be untestable
+      scope creep, not genuine progress.
 - [ ] Phase 6 — marks, internal marks, results, SGPA/CGPA
 - [ ] Phase 7 — dashboards, reports & export
 - [ ] Phase 8 — full test pass, security/performance review, PWA polish, deploy

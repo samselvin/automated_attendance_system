@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient, RoleName } from "@prisma/client";
 import { generateTempPassword, hashPassword } from "../src/lib/password";
+import { DEFAULT_FIRST_HOUR_ABSENCE_TEMPLATE } from "../src/lib/sms/template";
 
 const prisma = new PrismaClient();
 
@@ -181,6 +182,11 @@ async function main() {
     { key: "ATTENDANCE_CORRECTION_WINDOW_DAYS_TEACHER", value: 7, description: "Days a teacher may correct attendance." },
     { key: "PARENT_SMS_LANGUAGE", value: "en", description: "Language for parent SMS templates." },
     { key: "FIRST_HOUR_ABSENCE_SMS_ENABLED", value: true, description: "Send first-hour absence SMS to parents." },
+    {
+      key: "SMS_TEMPLATE_FIRST_HOUR_ABSENCE",
+      value: DEFAULT_FIRST_HOUR_ABSENCE_TEMPLATE,
+      description: "First-hour absence SMS text — must match the DLT-registered template exactly.",
+    },
   ];
   for (const s of settings) {
     await prisma.systemSetting.upsert({
