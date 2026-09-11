@@ -1,6 +1,6 @@
 import type { Session } from "next-auth";
 import { RoleName, type Prisma, type PrismaClient } from "@prisma/client";
-import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { adminDepartmentScope, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
 import { BadRequestError, ConflictError, NotFoundError } from "@/lib/api-utils";
@@ -380,7 +380,7 @@ export async function confirmImportJob(
     );
 
     return updatedJob;
-  }, LONG_TRANSACTION_OPTIONS);
+  });
 
   return { job: updatedJob, issuedCredentials };
 }

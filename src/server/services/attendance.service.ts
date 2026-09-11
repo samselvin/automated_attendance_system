@@ -1,6 +1,6 @@
 import type { Session } from "next-auth";
 import type { Prisma, Weekday } from "@prisma/client";
-import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { canAccessDepartment, isAdmin, ForbiddenError as ApiForbiddenError, UnauthorizedError } from "@/lib/rbac";
 import { getSetting } from "@/lib/settings";
@@ -422,7 +422,7 @@ export async function submitAttendance(
     );
 
     return { sessionIds: sessions.map((s) => s.id), isLateSubmission, sessions };
-  }, LONG_TRANSACTION_OPTIONS);
+  });
 
   // Section 33: fires immediately in the same flow but must never block or
   // break the response — deferred to run after the response is sent.

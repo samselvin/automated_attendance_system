@@ -1,5 +1,5 @@
 import type { Session } from "next-auth";
-import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { isAdmin, isTeacher, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
 import { getSetting } from "@/lib/settings";
@@ -83,7 +83,7 @@ export async function bulkEnterMarks(
       results.push(mark);
     }
     return results;
-  }, LONG_TRANSACTION_OPTIONS);
+  });
 }
 
 /**
@@ -182,7 +182,7 @@ export async function computeAndStoreInternalMarks(
     );
 
     return stored;
-  }, LONG_TRANSACTION_OPTIONS);
+  });
 }
 
 /**

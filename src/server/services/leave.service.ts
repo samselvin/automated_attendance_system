@@ -1,6 +1,6 @@
 import type { Session } from "next-auth";
 import type { Prisma } from "@prisma/client";
-import { prisma, LONG_TRANSACTION_OPTIONS } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
 import { canAccessDepartment, isAdmin, ForbiddenError, UnauthorizedError } from "@/lib/rbac";
 import { isActiveClassAdvisor, getActiveAdvisorClassIds } from "@/lib/class-advisor";
@@ -248,7 +248,7 @@ export async function decideLeaveOrMedical(
     );
 
     return updated;
-  }, LONG_TRANSACTION_OPTIONS);
+  });
 }
 
 /** Dual-approval flow for ON_DUTY — both the Class Advisor and the HOD must
@@ -341,5 +341,5 @@ export async function decideOdApproval(
     );
 
     return updated;
-  }, LONG_TRANSACTION_OPTIONS);
+  });
 }
