@@ -137,36 +137,57 @@ This is being built phase by phase (see the master prompt, Section 54):
       and `docs/setup-file-storage.md` cover every external credential;
       `docs/guide-admin.md`, `docs/guide-teacher.md` and `docs/guide-student.md`
       are the Section 55 user guides; `docs/pending-credentials.md` is the
-      single list of everything still waiting on a credential. Three
-      things were added after Phase 8 closed out: a **Reset password**
-      button on the Teachers and Students list pages (calling the
-      existing `POST /api/admin/users/:id/reset-password` endpoint,
-      confirmed and audit-logged the same way as password reset always
-      was); an Admin **Settings** screen (`/admin/settings`, college-wide
-      Admin only, same reasoning as Audit Logs — these rules have no
-      per-department scope) editing every `SystemSetting` row this app
-      actually reads, grouped by area (Attendance, Leave & On-Duty,
-      Marks, SMS), with the rows that are seeded but not yet consulted by
-      any business logic (`TIMEZONE`, `TIMETABLE_TYPE`,
-      `LEAVE_APPROVAL_MODE`, `OD_APPROVAL_MODE`, `PARENT_SMS_LANGUAGE`)
-      clearly labelled "Not used yet" rather than hidden, every save
-      validated against a per-setting schema (`src/lib/settings-schema.ts`)
-      and audit-logged as `SETTINGS_CHANGED` with the old and new value;
-      and a **Weekly Attendance Report** (`/admin/reports`, and from a
-      Class Advisor's own Home screen for their own class) that
-      reproduces the department's existing paper weekly attendance
-      register exactly — daily hours Monday to Friday, a weekly total,
-      and a running cumulative total since the semester began, both
-      computed from real attendance history and respecting the college's
-      configured Leave/OD counting rules the same way every other report
-      does. The paper form's own percentage bands (`>80`, `75–80`,
-      `70–75`, `65–70`, `below 60`) left a 60–65% gap that would go
-      uncounted once a real percentage lands there; the automated report
-      closes it with five contiguous bands ending in "below 65%" instead.
+      single list of everything still waiting on a credential.
       **Not yet built**: an automated integration/e2e test suite
       (Section 51 — every phase's end-to-end verification so far has been
       manual, see `docs/testing.md`); Leave/OD document upload
       (schema-ready, no upload route/UI — see `docs/setup-file-storage.md`).
+- [x] **Post-Phase-8 additions** — a running list of things added after the
+      formal 8-phase build plan closed out, each verified live against the
+      real database and fully cleaned up afterward:
+      - **Reset password** button on the Teachers and Students list pages,
+        calling the existing `POST /api/admin/users/:id/reset-password`
+        endpoint (confirmed and audit-logged the same way password reset
+        always was — it just had no UI trigger before).
+      - **Settings** screen (`/admin/settings`, college-wide Admin only —
+        Section 22's rules have no per-department scope) editing every
+        `SystemSetting` row this app actually reads, grouped by area
+        (Attendance, Leave & On-Duty, Marks, SMS). Rows that are seeded but
+        not yet consulted by any business logic (`TIMEZONE`,
+        `TIMETABLE_TYPE`, `LEAVE_APPROVAL_MODE`, `OD_APPROVAL_MODE`,
+        `PARENT_SMS_LANGUAGE`) are labelled "Not used yet" rather than
+        hidden. Every save is validated against a per-setting schema
+        (`src/lib/settings-schema.ts`) and audit-logged as
+        `SETTINGS_CHANGED` with the old and new value.
+      - **Weekly Attendance Report** (`/admin/reports`, and from a Class
+        Advisor's own Home screen for their own class) reproducing the
+        department's existing paper weekly attendance register exactly —
+        daily hours Monday to Friday, a weekly total, and a running
+        cumulative total since the semester began, respecting the
+        college's configured Leave/OD counting rules the same way every
+        other report does. The paper form's own percentage bands (`>80`,
+        `75–80`, `70–75`, `65–70`, `below 60`) left a 60–65% gap that would
+        go uncounted once a real percentage lands there; the automated
+        report closes it with five contiguous bands ending in "below 65%"
+        instead.
+      - A real transaction-timeout bug found during a full live test pass:
+        `getRoster` crashed with Prisma's P2028 the first time it was
+        exercised under real Neon latency — the same class of timeout
+        previously patched one call site at a time. Fixed at the root
+        instead: the 20s/10s budget is now the `PrismaClient`'s own
+        `transactionOptions` default (`src/lib/prisma.ts`), so every
+        interactive transaction gets it and no call site has to opt in.
+      - **Events** (Section 36, closing the one gap Phase 7 had explicitly
+        left open) — Admin, and a teacher granted the new `MANAGE_EVENTS`
+        permission, can create a draft event (workshop, seminar, exam,
+        holiday, sports, cultural, etc.) scoped to the whole college, one
+        department, one year within a department, one class, or one
+        student group, then Publish it. Publishing notifies every student
+        in that audience (`EVENT_PUBLISHED`) and can't be undone; a
+        published event can't be deleted, only an unpublished draft can.
+        Students see only events relevant to them, matched by a pure,
+        unit-tested predicate (`src/lib/events/audience.ts`) — surfaced on
+        the student Home screen and at `/student/events`.
 
 ## Documentation
 

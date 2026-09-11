@@ -74,6 +74,14 @@ cutoff, and a few other college-wide rules can be changed any time from
   its Weekly Attendance Report too, from their Home screen. Excel/PDF
   export aren't built yet — CSV and the browser's own Print are what's
   available.
+- **Events** (`/admin/events`) — announce a workshop, seminar, exam,
+  holiday, sports day, or cultural event to the whole college, one
+  department, one year within a department, one class, or one student
+  group. Create it as a draft first, then **Publish** when it's ready —
+  publishing immediately notifies every student in that audience and
+  can't be undone (a published event also can't be deleted; only an
+  unpublished draft can). A teacher can be granted the same ability for
+  their own department/class via a `MANAGE_EVENTS` permission grant.
 - **Audit Logs** (`/admin/audit-logs`) — **visible only to a college-wide
   Admin** (one whose role isn't scoped to a single department), since log
   entries can span every department and don't carry a reliable

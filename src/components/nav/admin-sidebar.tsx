@@ -51,7 +51,10 @@ const SECTIONS: { title: string; items: { href: string; label: string }[] }[] = 
   },
   {
     title: "Reports",
-    items: [{ href: "/admin/reports", label: "Reports & Export" }],
+    items: [
+      { href: "/admin/reports", label: "Reports & Export" },
+      { href: "/admin/events", label: "Events" },
+    ],
   },
 ];
 

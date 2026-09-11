@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { getMyStudentProfile } from "@/server/services/student-self.service";
 import { getStudentAttendancePercentage } from "@/server/services/attendance-report.service";
 import { getStudentScheduleForDate } from "@/server/services/schedule.service";
+import { listEventsForStudent } from "@/server/services/event.service";
 import { prisma } from "@/lib/prisma";
 import { collegeDateString } from "@/lib/time";
 
@@ -23,10 +24,12 @@ export default async function StudentHome() {
   const { student, enrollment } = await getMyStudentProfile(session);
   const today = collegeDateString();
 
-  const [percentage, todaySchedule] = await Promise.all([
+  const [percentage, todaySchedule, events] = await Promise.all([
     getStudentAttendancePercentage(session, student.id, {}),
     getStudentScheduleForDate(session, today),
+    listEventsForStudent(session),
   ]);
+  const upcomingEvents = events.filter((e) => e.endAt >= new Date()).slice(0, 3);
 
   const upcomingComponents = enrollment
     ? await prisma.assessmentComponent.findMany({
@@ -96,6 +99,23 @@ export default async function StudentHome() {
             </ul>
           )}
         </Card>
+
+        {upcomingEvents.length > 0 ? (
+          <Card>
+            <p className="mb-2 text-sm font-semibold text-slate-900">Upcoming Events</p>
+            <ul className="divide-y divide-slate-100">
+              {upcomingEvents.map((e) => (
+                <li key={e.id} className="py-2 text-sm">
+                  <p className="font-medium text-slate-900">{e.title}</p>
+                  <p className="text-xs text-slate-500">{e.startAt.toLocaleDateString()}</p>
+                </li>
+              ))}
+            </ul>
+            <Link href="/student/events" className="mt-2 inline-block text-xs font-medium text-slate-600 underline">
+              View all events
+            </Link>
+          </Card>
+        ) : null}
 
         <Link href="/student/attendance" className="block text-center text-sm font-medium text-slate-600 underline">
           View full attendance & apply for leave/OD

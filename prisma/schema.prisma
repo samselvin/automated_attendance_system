@@ -436,6 +436,7 @@ model Class {
   timetableVersions       TimetableVersion[]
   attendanceSessions      AttendanceSession[]
   teacherPermissionGrants TeacherPermissionGrant[]
+  events                  Event[]
 
   @@unique([departmentId, academicYearId, yearOfStudy, section])
   @@map("classes")
@@ -456,6 +457,7 @@ model StudentGroup {
   subjectOfferings   SubjectOffering[]
   timetableEntries   TimetableEntry[]
   attendanceSessions AttendanceSession[]
+  events             Event[]
 
   @@map("student_groups")
 }
@@ -1109,7 +1111,16 @@ model Event {
   description      String?
   type             EventType
   audienceType     EventAudienceType @map("audience_type")
+  // Audience scoping columns — which ones are required depends on
+  // audienceType (Section 36): COLLEGE needs none, DEPARTMENT needs
+  // departmentId, YEAR needs departmentId + yearOfStudy, CLASS needs
+  // classId, GROUP needs studentGroupId. Validated in event.service.ts,
+  // not by a DB constraint (Postgres CHECK constraints referencing
+  // sibling columns conditionally aren't worth the complexity here).
   departmentId     String?           @map("department_id")
+  yearOfStudy      Int?              @map("year_of_study")
+  classId          String?           @map("class_id")
+  studentGroupId   String?           @map("student_group_id")
   startAt          DateTime          @map("start_at")
   endAt            DateTime          @map("end_at")
   venue            String?
@@ -1120,9 +1131,12 @@ model Event {
   createdAt        DateTime          @default(now()) @map("created_at")
   updatedAt        DateTime          @updatedAt @map("updated_at")
 
-  department     Department? @relation(fields: [departmentId], references: [id])
-  attachmentFile FileAsset?  @relation(fields: [attachmentFileId], references: [id])
+  department     Department?   @relation(fields: [departmentId], references: [id])
+  class          Class?        @relation(fields: [classId], references: [id])
+  studentGroup   StudentGroup? @relation(fields: [studentGroupId], references: [id])
+  attachmentFile FileAsset?    @relation(fields: [attachmentFileId], references: [id])
 
+  @@index([audienceType, isPublished, startAt])
   @@map("events")
 }
 

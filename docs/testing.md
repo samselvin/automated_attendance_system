@@ -7,7 +7,7 @@ npm test          # run once
 npm run test:watch
 ```
 
-140 Vitest tests cover every pure calculation module — the parts of the
+146 Vitest tests cover every pure calculation module — the parts of the
 system where a subtle bug is easiest to introduce silently and hardest to
 notice by eye:
 
@@ -34,6 +34,8 @@ notice by eye:
   setting's own fallback value satisfies its own schema
 - `src/lib/attendance/weekly-report.test.ts` — Monday-snapping, the five
   weekday dates, and the percentage bands covering 0–100% with no gap
+- `src/lib/events/audience.test.ts` — which students a COLLEGE/DEPARTMENT/
+  YEAR/CLASS/GROUP event applies to
 - `src/lib/env.test.ts`, `src/lib/time.test.ts`, `src/lib/import/validators.test.ts`
 
 Run `npm test` before every commit that touches any of these modules —

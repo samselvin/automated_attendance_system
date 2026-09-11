@@ -24,3 +24,13 @@ export async function hasTeacherPermission(
   });
   return !!grant;
 }
+
+/** Whether a teacher holds a given permission at all, regardless of scope
+ * — for deciding whether to surface a management screen/link at all,
+ * before knowing which specific department/class it'd apply to. */
+export async function hasAnyTeacherPermission(teacherId: string, permissionKey: string): Promise<boolean> {
+  const grant = await prisma.teacherPermissionGrant.findFirst({
+    where: { teacherId, status: "ACTIVE", permission: { key: permissionKey } },
+  });
+  return !!grant;
+}

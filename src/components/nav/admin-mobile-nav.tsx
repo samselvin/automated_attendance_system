@@ -21,6 +21,7 @@ const LINKS = [
   ["/admin/timetable-requests", "Timetable Requests"],
   ["/admin/unlock-requests", "Late-Attendance Unlocks"],
   ["/admin/reports", "Reports & Export"],
+  ["/admin/events", "Events"],
 ] as const;
 
 const COLLEGE_WIDE_LINKS = [

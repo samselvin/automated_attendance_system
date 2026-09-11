@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getTeacherScheduleForDate } from "@/server/services/schedule.service";
 import { getActiveAdvisorClassIds } from "@/lib/class-advisor";
+import { hasAnyTeacherPermission } from "@/lib/permissions";
 import { collegeDateString, collegeTimeString } from "@/lib/time";
 import { getSetting } from "@/lib/settings";
 import { prisma } from "@/lib/prisma";
@@ -17,10 +18,11 @@ export default async function TeacherHome() {
   const today = collegeDateString();
   const now = collegeTimeString();
 
-  const [schedule, advisorClassIds, cutoff] = await Promise.all([
+  const [schedule, advisorClassIds, cutoff, canManageEvents] = await Promise.all([
     getTeacherScheduleForDate(session, today),
     getActiveAdvisorClassIds(teacherId),
     getSetting<string>("ATTENDANCE_DAILY_CUTOFF"),
+    hasAnyTeacherPermission(teacherId, "MANAGE_EVENTS"),
   ]);
 
   const missingCount = schedule.filter((s) => s.attendanceStatus !== "HELD" && s.scheduledStart && now > s.scheduledStart).length;
@@ -106,6 +108,15 @@ export default async function TeacherHome() {
                 </Link>
               ))}
             </div>
+          </Card>
+        ) : null}
+
+        {canManageEvents ? (
+          <Card>
+            <CardHeader title="Events" />
+            <Link href="/teacher/events" className="text-xs font-medium text-slate-600 underline">
+              Create or publish an event
+            </Link>
           </Card>
         ) : null}
       </main>

@@ -43,6 +43,10 @@ async function main() {
       key: "APPROVE_LEAVE_OD",
       description: "Class Advisor may approve/reject Leave, Medical and On-Duty requests for their class.",
     },
+    {
+      key: "MANAGE_EVENTS",
+      description: "Teacher may create and publish events (Section 36) for their permitted department/class scope.",
+    },
   ];
   for (const p of permissionDefs) {
     await prisma.permission.upsert({

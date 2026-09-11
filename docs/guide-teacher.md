@@ -73,3 +73,10 @@ number here never means a student can see it that same moment.
 If your schedule needs a change (a swapped period, a new offering, etc.),
 submit a request from `/teacher/timetable-requests` — Admin reviews and
 either applies it or declines it with a reason.
+
+## Events
+
+If Admin has granted you the `MANAGE_EVENTS` permission, an **Events**
+link appears on your Home screen (`/teacher/events`). Create a draft event
+for your department or class, then Publish it — every student in that
+audience gets notified immediately, and it can't be undone.

@@ -54,6 +54,13 @@ Nothing here is visible before publishing — entering marks and publishing
 results are two separate steps specifically so a mark being entered never
 means it's final yet.
 
+## Events
+
+Workshops, seminars, exams, sports days, and other events relevant to
+you — whole-college, your department, your year, your class, or a
+student group you're in — show up on your Home screen and at
+`/student/events`, and you're notified the moment one is published.
+
 ## Timetable
 
 A read-only weekly view of your class's schedule, including which bell
