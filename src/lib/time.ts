@@ -30,3 +30,12 @@ export function collegeWallClockToUtc(dateStr: string, hhmm: string): Date {
 export function compareHHMM(a: string, b: string): number {
   return a.localeCompare(b);
 }
+
+/** One UTC calendar day before `date` — used to close out an ended posting
+ * or enrollment the day its replacement takes effect (Sections 11, 14),
+ * without ever touching the replacement's own start date. */
+export function dayBeforeUtc(date: Date): Date {
+  const d = new Date(date);
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d;
+}

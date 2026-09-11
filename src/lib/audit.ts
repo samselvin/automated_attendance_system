@@ -20,6 +20,11 @@ export interface AuditLogInput {
   userAgent?: string | null;
 }
 
+/** Strips Date/Decimal/etc. down to plain JSON so it satisfies Prisma's Json column typing. */
+export function toAuditJson(value: unknown): Prisma.InputJsonValue {
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
+}
+
 export async function writeAuditLog(
   input: AuditLogInput,
   tx: Prisma.TransactionClient | typeof prisma = prisma

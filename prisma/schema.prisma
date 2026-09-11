@@ -1173,20 +1173,25 @@ model FileAsset {
 }
 
 model ImportJob {
-  id            String           @id @default(cuid())
-  entityType    ImportEntityType @map("entity_type")
-  fileId        String           @map("file_id")
-  columnMapping Json             @map("column_mapping")
-  status        ImportStatus     @default(UPLOADED)
-  totalRows     Int              @default(0) @map("total_rows")
-  validRows     Int              @default(0) @map("valid_rows")
-  errorRows     Int              @default(0) @map("error_rows")
-  duplicateRows Int              @default(0) @map("duplicate_rows")
-  createdById   String           @map("created_by_id")
-  createdAt     DateTime         @default(now()) @map("created_at")
-  updatedAt     DateTime         @updatedAt @map("updated_at")
+  id             String           @id @default(cuid())
+  entityType     ImportEntityType @map("entity_type")
+  // File storage (S3) needs credentials this deployment may not have yet —
+  // fileId is populated once STORAGE_* env vars are configured; until then,
+  // imports run directly off the uploaded CSV text (Section 54's documented
+  // exception for integrations that need an external credential).
+  fileId         String?          @map("file_id")
+  sourceFilename String?          @map("source_filename")
+  columnMapping  Json             @map("column_mapping")
+  status         ImportStatus     @default(UPLOADED)
+  totalRows      Int              @default(0) @map("total_rows")
+  validRows      Int              @default(0) @map("valid_rows")
+  errorRows      Int              @default(0) @map("error_rows")
+  duplicateRows  Int              @default(0) @map("duplicate_rows")
+  createdById    String           @map("created_by_id")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
-  file FileAsset   @relation(fields: [fileId], references: [id])
+  file FileAsset?  @relation(fields: [fileId], references: [id])
   rows ImportRow[]
 
   @@map("import_jobs")

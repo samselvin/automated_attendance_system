@@ -16,8 +16,13 @@ This is being built phase by phase (see the master prompt, Section 54):
 
 - [x] **Phase 1** — project setup, database schema & migrations, seed script,
       Google authentication, first-admin bootstrap, RBAC foundation, audit log
-- [ ] Phase 2 — departments, regulations, academic years, classes, teachers,
-      students, enrollments, Class Advisor postings, imports
+- [x] **Phase 2** — departments, regulations + grading scale, academic years
+      & semesters, classes, teachers, students + parent contacts, enrollments
+      (promotion/transfer history), student groups, Class Advisor postings,
+      CSV import for students & teachers (Excel/Google Sheets/OCR import are
+      not built yet — Sheets needs a service-account credential and OCR
+      needs either a cloud vision API key or a heavy local model; both are
+      documented pending work, not stubbed)
 - [ ] Phase 3 — subjects/offerings, bell schedules, timetables, calendar
 - [ ] Phase 4 — attendance sessions/records, leave & OD, percentages
 - [ ] Phase 5 — notifications, first-hour parent SMS
