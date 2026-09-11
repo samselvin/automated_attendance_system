@@ -261,6 +261,7 @@ model User {
   auditLogs     AuditLog[]     @relation("AuditActor")
   notifications Notification[]
   filesUploaded FileAsset[]    @relation("FileUploadedBy")
+  marksEntered  Mark[]         @relation("MarksEnteredBy")
 
   @@map("users")
 }
@@ -583,7 +584,6 @@ model Teacher {
   attendanceSessionsActual    AttendanceSession[]      @relation("ActualTeacher")
   substitutionsAsOriginal     Substitution[]           @relation("OriginalTeacher")
   substitutionsAsSubstitute   Substitution[]           @relation("SubstituteTeacher")
-  marksEntered                Mark[]                   @relation("MarksEnteredBy")
   timetableChangeRequests     TimetableChangeRequest[]
 
   @@index([departmentId])
@@ -1065,7 +1065,10 @@ model Mark {
   student             Student             @relation(fields: [studentId], references: [id])
   subjectOffering     SubjectOffering     @relation(fields: [subjectOfferingId], references: [id])
   assessmentComponent AssessmentComponent @relation(fields: [assessmentComponentId], references: [id])
-  enteredBy           Teacher             @relation("MarksEnteredBy", fields: [enteredById], references: [id])
+  // References User, not Teacher: Section 34 requires Admin to be able to
+  // enter/correct marks too (e.g. after locking), and an Admin has no
+  // Teacher row to point to.
+  enteredBy           User                @relation("MarksEnteredBy", fields: [enteredById], references: [id])
 
   @@unique([studentId, assessmentComponentId])
   @@index([subjectOfferingId])

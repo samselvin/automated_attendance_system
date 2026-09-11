@@ -57,7 +57,20 @@ This is being built phase by phase (see the master prompt, Section 54):
       it needs the PWA service-worker/installability work to actually be
       testable, so building the backend alone now would be untestable
       scope creep, not genuine progress.
-- [ ] Phase 6 — marks, internal marks, results, SGPA/CGPA
+- [x] **Phase 6** — assessment component rules (configurable per regulation,
+      never hard-coded — R2022's CAT/Class Test/Assignment/MCQ formula is
+      just the seeded default) and concrete assessment components per
+      subject offering, marks entry (bulk, with a max-marks and lock check),
+      a generic internal-marks calculator that correctly reproduces R2022's
+      CAT-retest replacement and percentage-of-max averaging, marks lock
+      (teacher blocked, Admin can still override) and publish gating
+      (students see nothing pre-publish), official semester-result entry
+      (grade → grade point via the regulation's grading scale) kept
+      separate from internal marks so entering the internal figure never
+      requires knowing the university's outcome yet, and SGPA (per-semester
+      snapshot, first attempt only) / CGPA (cumulative, latest passing
+      attempt per subject — proved live that a fixed arrear correctly
+      replaces its earlier fail).
 - [ ] Phase 7 — dashboards, reports & export
 - [ ] Phase 8 — full test pass, security/performance review, PWA polish, deploy
 

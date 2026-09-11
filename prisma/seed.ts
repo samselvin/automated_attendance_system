@@ -187,6 +187,11 @@ async function main() {
       value: DEFAULT_FIRST_HOUR_ABSENCE_TEMPLATE,
       description: "First-hour absence SMS text — must match the DLT-registered template exactly.",
     },
+    {
+      key: "INTERNAL_MARKS_ROUNDING",
+      value: "NEAREST_INTEGER",
+      description: "How the final internal mark is rounded (NEAREST_INTEGER or NONE). The unrounded value is always kept alongside it.",
+    },
   ];
   for (const s of settings) {
     await prisma.systemSetting.upsert({
