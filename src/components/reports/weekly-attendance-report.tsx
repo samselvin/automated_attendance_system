@@ -42,6 +42,7 @@ interface RawRow {
 interface ReportData {
   classLabel: string;
   departmentName: string;
+  yearOfStudy: number;
   academicYearLabel: string;
   semesterNumber: number;
   semesterType: string;
@@ -59,10 +60,21 @@ interface ReportData {
 
 const WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 const BAND_ORDER = ["GT_80", "P75_TO_80", "P70_TO_75", "P65_TO_70", "LT_65"];
+const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+function toRoman(n: number): string {
+  return ROMAN[n] ?? String(n);
+}
 
 function formatDate(iso: string) {
   const [y, m, d] = iso.split("-");
   return `${d}.${m}.${y}`;
+}
+
+/** "2026-2027" -> "26-27", matching the paper form's "AY 26-27" style. */
+function shortAcademicYear(label: string): string {
+  const [start, end] = label.split("-");
+  return `${start?.slice(-2)}-${end?.slice(-2)}`;
 }
 
 function mondayOfThisWeek(): string {
@@ -162,23 +174,28 @@ export function WeeklyAttendanceReport({
 
       {data ? (
         <div>
-          <div className="mb-2 hidden text-center print:block">
-            <p className="text-sm font-semibold">PSN COLLEGE OF ENGINEERING AND TECHNOLOGY (AUTONOMOUS)</p>
-            <p className="text-xs">MELATHEDIYOOR, TIRUNELVELI 627152</p>
-            <p className="text-xs font-medium">DEPARTMENT OF {data.departmentName.toUpperCase()}</p>
-            <p className="text-sm font-semibold underline">WEEKLY ATTENDANCE REPORT</p>
+          <div className="mb-3 border-b border-slate-300 pb-2 text-xs print:text-[11px]">
+            <div className="flex items-start justify-between">
+              <span>
+                Year / Sem: <strong>{toRoman(data.yearOfStudy)}/{toRoman(data.semesterNumber)}</strong>
+              </span>
+              <span>
+                BATCH: <strong>{data.batchLabel ?? "—"}</strong>
+              </span>
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-semibold">PSN COLLEGE OF ENGINEERING AND TECHNOLOGY (AUTONOMOUS)</p>
+              <p>MELATHEDIYOOR, TIRUNELVELI 627152</p>
+              <p className="font-medium">DEPARTMENT OF {data.departmentName.toUpperCase()}</p>
+              <p className="mt-1 text-sm font-semibold underline">WEEKLY ATTENDANCE REPORT</p>
+            </div>
+            <p className="mt-1">
+              DATE : {formatDate(data.weekStart)} TO {formatDate(data.weekEnd)}
+            </p>
           </div>
-          <div className="mb-2 flex flex-wrap justify-between gap-2 text-xs print:text-[10px]">
-            <span>
-              Class: <strong>{data.classLabel}</strong> · Batch: {data.batchLabel ?? "—"}
-            </span>
-            <span>
-              AY {data.academicYearLabel} · {data.semesterType === "ODD" ? "Odd" : "Even"} Semester — Semester {data.semesterNumber}
-            </span>
-            <span>
-              {formatDate(data.weekStart)} to {formatDate(data.weekEnd)}
-            </span>
-          </div>
+          <p className="mb-2 text-right text-xs print:text-[10px]">
+            AY {shortAcademicYear(data.academicYearLabel)} {data.semesterType === "ODD" ? "Odd" : "Even"} Semester - {toRoman(data.semesterNumber)} Semester
+          </p>
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] border-collapse text-left text-xs">
