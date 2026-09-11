@@ -23,7 +23,13 @@ This is being built phase by phase (see the master prompt, Section 54):
       not built yet — Sheets needs a service-account credential and OCR
       needs either a cloud vision API key or a heavy local model; both are
       documented pending work, not stubbed)
-- [ ] Phase 3 — subjects/offerings, bell schedules, timetables, calendar
+- [x] **Phase 3** — subjects (regulation-catalog, keyed by semester number)
+      and offerings, bell schedules (with slot-overlap validation), rooms,
+      timetable versions/entries with full Section 21 conflict detection
+      (teacher/room/class double-booking checked across all departments by
+      actual time overlap, not just shared slot IDs), lock/unlock,
+      timetable change requests, academic calendar days, substitute
+      assignment — all with in-app notifications and audit logs
 - [ ] Phase 4 — attendance sessions/records, leave & OD, percentages
 - [ ] Phase 5 — notifications, first-hour parent SMS
 - [ ] Phase 6 — marks, internal marks, results, SGPA/CGPA

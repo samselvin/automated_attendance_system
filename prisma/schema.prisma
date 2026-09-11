@@ -404,7 +404,6 @@ model Semester {
 
   academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
 
-  subjects             Subject[]
   subjectOfferings     SubjectOffering[]
   enrollments          StudentEnrollment[]
   timetableVersions    TimetableVersion[]
@@ -618,21 +617,24 @@ model ClassAdvisorPosting {
 // ─────────────────────────────────────────────────────────────────────────
 
 model Subject {
-  id           String      @id @default(cuid())
-  code         String
-  name         String
-  departmentId String      @map("department_id")
-  regulationId String      @map("regulation_id")
-  semesterId   String      @map("semester_id")
-  credits      Decimal     @db.Decimal(3, 1)
-  type         SubjectType
-  status       UserStatus  @default(ACTIVE)
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
+  id             String      @id @default(cuid())
+  code           String
+  name           String
+  departmentId   String      @map("department_id")
+  regulationId   String      @map("regulation_id")
+  // The catalog entry is keyed by semester NUMBER (1-8), not a specific
+  // academic year's Semester row — it's regulation-level and reusable
+  // across years (Section 16). The year-specific link lives on
+  // SubjectOffering instead.
+  semesterNumber Int         @map("semester_number")
+  credits        Decimal     @db.Decimal(3, 1)
+  type           SubjectType
+  status         UserStatus  @default(ACTIVE)
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
 
   department Department @relation(fields: [departmentId], references: [id])
   regulation Regulation @relation(fields: [regulationId], references: [id])
-  semester   Semester   @relation(fields: [semesterId], references: [id])
 
   offerings                SubjectOffering[]
   assessmentComponentRules AssessmentComponentRule[]
