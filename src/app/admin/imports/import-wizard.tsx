@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 const STUDENT_FIELDS = [
-  "email", "rollNumber", "registerNumber", "fullName", "dateOfBirth",
+  "email", "rollNumber", "registerNumber", "fullName", "dateOfBirth", "mobileNumber",
   "departmentCode", "regulationCode", "batchLabel", "admissionType",
   "academicYearLabel", "yearOfStudy", "section", "semesterNumber",
   "effectiveFrom", "parentName", "parentRelationship", "parentMobile",

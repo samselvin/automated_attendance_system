@@ -67,6 +67,16 @@ describe("validateStudentRow", () => {
     });
   });
 
+  it("accepts the student's own optional mobileNumber", () => {
+    const result = validateStudentRow({ ...validRow, mobileNumber: "9876543210" });
+    expect(result.normalized?.mobileNumber).toBe("9876543210");
+  });
+
+  it("leaves mobileNumber undefined when not given", () => {
+    const result = validateStudentRow(validRow);
+    expect(result.normalized?.mobileNumber).toBeUndefined();
+  });
+
   it("rejects an out-of-range yearOfStudy", () => {
     const result = validateStudentRow({ ...validRow, yearOfStudy: "5" });
     expect(result.errors).toContain("yearOfStudy must be an integer 1-4");

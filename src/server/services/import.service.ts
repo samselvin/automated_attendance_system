@@ -389,6 +389,7 @@ export async function confirmImportJob(
             registerNumber: normalized.registerNumber,
             fullName: normalized.fullName,
             dateOfBirth: normalized.dateOfBirth ? new Date(`${normalized.dateOfBirth}T00:00:00.000Z`) : undefined,
+            mobileNumber: normalized.mobileNumber,
             departmentId: department.id,
             regulationId: regulation.id,
             batchLabel: normalized.batchLabel,

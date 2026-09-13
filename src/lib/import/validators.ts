@@ -17,6 +17,7 @@ export interface NormalizedStudentRow {
   registerNumber?: string;
   fullName: string;
   dateOfBirth?: string;
+  mobileNumber?: string;
   departmentCode: string;
   regulationCode: string;
   batchLabel: string;
@@ -150,6 +151,7 @@ export function validateStudentRow(raw: Record<string, string>): RowValidationRe
       registerNumber: raw.registerNumber?.trim() || undefined,
       fullName,
       dateOfBirth,
+      mobileNumber: raw.mobileNumber?.trim() || undefined,
       departmentCode,
       regulationCode,
       batchLabel,
