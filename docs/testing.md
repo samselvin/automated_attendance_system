@@ -7,7 +7,7 @@ npm test          # run once
 npm run test:watch
 ```
 
-146 Vitest tests cover every pure calculation module — the parts of the
+154 Vitest tests cover every pure calculation module — the parts of the
 system where a subtle bug is easiest to introduce silently and hardest to
 notice by eye:
 

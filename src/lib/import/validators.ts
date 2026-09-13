@@ -31,6 +31,18 @@ export interface NormalizedStudentRow {
   parentMobile: string;
 }
 
+export interface NormalizedSubjectRow {
+  code: string;
+  name: string;
+  departmentCode: string;
+  regulationCode: string;
+  semesterNumber: number;
+  credits: number;
+  type: "THEORY" | "LAB" | "THEORY_WITH_LAB" | "ELECTIVE" | "PROJECT" | "NON_CREDIT";
+}
+
+const SUBJECT_TYPES = ["THEORY", "LAB", "THEORY_WITH_LAB", "ELECTIVE", "PROJECT", "NON_CREDIT"];
+
 export interface RowValidationResult<T> {
   errors: string[];
   normalized: T | null;
@@ -150,6 +162,55 @@ export function validateStudentRow(raw: Record<string, string>): RowValidationRe
       parentName,
       parentRelationship,
       parentMobile,
+    },
+  };
+}
+
+export function validateSubjectRow(raw: Record<string, string>): RowValidationResult<NormalizedSubjectRow> {
+  const errors: string[] = [];
+
+  const code = (raw.code ?? "").trim().toUpperCase();
+  if (!code) errors.push("code is required");
+
+  const name = (raw.name ?? "").trim();
+  if (!name) errors.push("name is required");
+
+  const departmentCode = (raw.departmentCode ?? "").trim().toUpperCase();
+  if (!departmentCode) errors.push("departmentCode is required");
+
+  const regulationCode = (raw.regulationCode ?? "").trim().toUpperCase();
+  if (!regulationCode) errors.push("regulationCode is required");
+
+  const semesterNumber = Number(raw.semesterNumber);
+  if (!raw.semesterNumber) errors.push("semesterNumber is required");
+  else if (!Number.isInteger(semesterNumber) || semesterNumber < 1 || semesterNumber > 8) {
+    errors.push("semesterNumber must be an integer 1-8");
+  }
+
+  const credits = Number(raw.credits);
+  if (!raw.credits) errors.push("credits is required");
+  else if (!Number.isFinite(credits) || credits < 0 || credits > 10) {
+    errors.push("credits must be a number between 0 and 10");
+  }
+
+  const type = (raw.type ?? "").trim().toUpperCase();
+  if (!type) errors.push("type is required");
+  else if (!SUBJECT_TYPES.includes(type)) {
+    errors.push(`type must be one of ${SUBJECT_TYPES.join(", ")}`);
+  }
+
+  if (errors.length > 0) return { errors, normalized: null };
+
+  return {
+    errors,
+    normalized: {
+      code,
+      name,
+      departmentCode,
+      regulationCode,
+      semesterNumber,
+      credits,
+      type: type as NormalizedSubjectRow["type"],
     },
   };
 }

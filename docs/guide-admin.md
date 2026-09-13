@@ -39,7 +39,14 @@ Do these once, roughly in this order (later steps depend on earlier ones):
    overwritten).
 7. **Subjects & Offerings** (`/admin/subjects`) — the regulation's subject
    catalog, then which teacher(s) teach which subject to which class this
-   semester.
+   semester. Add subjects one at a time here, or in bulk via **Imports**
+   (see below). Made a mistake on one (wrong name or credit value)? Click
+   **Edit** on that subject's row — name, credits and active/inactive
+   status can be corrected anytime; the code, department, regulation and
+   semester number can't be changed after creation (those are what
+   offerings, marks and reports are already keyed on — fix a mistake
+   there by deactivating the wrong entry and adding a correct one instead
+   of editing it in place).
 8. **Bell Schedules** (`/admin/bell-schedules`) — the daily period
    structure (start/end times per period). Different classes or days can
    use different bell schedules.

@@ -11,6 +11,7 @@ const STUDENT_FIELDS = [
   "effectiveFrom", "parentName", "parentRelationship", "parentMobile",
 ];
 const TEACHER_FIELDS = ["email", "employeeId", "fullName", "designation", "departmentCode", "mobileNumber"];
+const SUBJECT_FIELDS = ["code", "name", "departmentCode", "regulationCode", "semesterNumber", "credits", "type"];
 
 interface ImportRow {
   id: string;
@@ -30,14 +31,14 @@ interface ImportJob {
 
 export function ImportWizard() {
   const router = useRouter();
-  const [entityType, setEntityType] = useState<"STUDENT" | "TEACHER">("STUDENT");
+  const [entityType, setEntityType] = useState<"STUDENT" | "TEACHER" | "SUBJECT">("STUDENT");
   const [csvText, setCsvText] = useState("");
   const [job, setJob] = useState<ImportJob | null>(null);
   const [confirmResult, setConfirmResult] = useState<{ imported: number; credentials: { email: string; tempPassword: string }[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const fields = entityType === "STUDENT" ? STUDENT_FIELDS : TEACHER_FIELDS;
+  const fields = entityType === "STUDENT" ? STUDENT_FIELDS : entityType === "TEACHER" ? TEACHER_FIELDS : SUBJECT_FIELDS;
 
   async function handlePreview() {
     setError(null);
@@ -152,9 +153,14 @@ export function ImportWizard() {
 
   return (
     <div className="space-y-3">
-      <select value={entityType} onChange={(e) => setEntityType(e.target.value as "STUDENT" | "TEACHER")} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+      <select
+        value={entityType}
+        onChange={(e) => setEntityType(e.target.value as "STUDENT" | "TEACHER" | "SUBJECT")}
+        className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+      >
         <option value="STUDENT">Students</option>
         <option value="TEACHER">Teachers</option>
+        <option value="SUBJECT">Subjects</option>
       </select>
       <p className="text-xs text-slate-500">
         Paste CSV with a header row using exactly these column names: <span className="font-mono">{fields.join(", ")}</span>

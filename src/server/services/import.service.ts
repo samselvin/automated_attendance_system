@@ -10,8 +10,10 @@ import { parseCsvText, applyColumnMapping } from "@/lib/import/csv";
 import {
   validateStudentRow,
   validateTeacherRow,
+  validateSubjectRow,
   type NormalizedStudentRow,
   type NormalizedTeacherRow,
+  type NormalizedSubjectRow,
 } from "@/lib/import/validators";
 import type { CreateImportJobInput } from "@/lib/validation/import";
 
@@ -35,6 +37,29 @@ async function resolveTeacherRow(tx: Tx, row: NormalizedTeacherRow, session: Ses
     if (existingUser.status === "INACTIVE") errors.push(`Deactivated account already exists: ${row.email}`);
     const existingTeacher = await tx.teacher.findUnique({ where: { userId: existingUser.id } });
     if (existingTeacher) errors.push(`Email already registered as a teacher: ${row.email}`);
+  }
+
+  return errors;
+}
+
+async function resolveSubjectRow(tx: Tx, row: NormalizedSubjectRow, session: Session): Promise<string[]> {
+  const errors: string[] = [];
+
+  const department = await tx.department.findUnique({ where: { code: row.departmentCode } });
+  if (!department) {
+    errors.push(`Unknown departmentCode: ${row.departmentCode}`);
+  } else if (!canAccessDepartment(session, department.id)) {
+    errors.push(`Outside your department scope: ${row.departmentCode}`);
+  }
+
+  const regulation = await tx.regulation.findUnique({ where: { code: row.regulationCode } });
+  if (!regulation) errors.push(`Unknown regulationCode: ${row.regulationCode}`);
+
+  if (regulation) {
+    const dup = await tx.subject.findUnique({
+      where: { regulationId_code: { regulationId: regulation.id, code: row.code } },
+    });
+    if (dup) errors.push(`Subject code already exists for this regulation: ${row.code}`);
   }
 
   return errors;
@@ -134,6 +159,30 @@ export async function createImportJob(
         seenKeys.add(key);
 
         const dbErrors = await resolveTeacherRow(prisma, normalized, session);
+        return {
+          rowNumber,
+          rawData: mapped,
+          status: dbErrors.length > 0 ? ("ERROR" as const) : ("VALID" as const),
+          errors: dbErrors,
+        };
+      }
+
+      if (input.entityType === "SUBJECT") {
+        const { errors, normalized } = validateSubjectRow(mapped);
+        if (!normalized) return { rowNumber, rawData: mapped, status: "ERROR" as const, errors };
+
+        const key = `reg:${normalized.regulationCode}|code:${normalized.code}`;
+        if (seenKeys.has(key)) {
+          return {
+            rowNumber,
+            rawData: mapped,
+            status: "DUPLICATE" as const,
+            errors: ["Duplicate of another row in this file"],
+          };
+        }
+        seenKeys.add(key);
+
+        const dbErrors = await resolveSubjectRow(prisma, normalized, session);
         return {
           rowNumber,
           rawData: mapped,
@@ -275,6 +324,27 @@ export async function confirmImportJob(
         });
         await tx.userRole.create({
           data: { userId: user.id, role: RoleName.TEACHER, departmentId: department.id },
+        });
+      } else if (job.entityType === "SUBJECT") {
+        const { normalized } = validateSubjectRow(row.rawData as Record<string, string>);
+        if (!normalized) throw new ConflictError(`Row ${row.rowNumber} failed re-validation at confirm time`);
+        const dbErrors = await resolveSubjectRow(tx, normalized, session);
+        if (dbErrors.length > 0) {
+          throw new ConflictError(`Row ${row.rowNumber}: ${dbErrors.join("; ")}`);
+        }
+        const department = await tx.department.findUniqueOrThrow({ where: { code: normalized.departmentCode } });
+        const regulation = await tx.regulation.findUniqueOrThrow({ where: { code: normalized.regulationCode } });
+
+        await tx.subject.create({
+          data: {
+            code: normalized.code,
+            name: normalized.name,
+            departmentId: department.id,
+            regulationId: regulation.id,
+            semesterNumber: normalized.semesterNumber,
+            credits: normalized.credits,
+            type: normalized.type,
+          },
         });
       } else {
         const { normalized } = validateStudentRow(row.rawData as Record<string, string>);

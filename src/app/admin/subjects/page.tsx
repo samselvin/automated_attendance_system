@@ -10,6 +10,7 @@ import { listAcademicYears } from "@/server/services/academic-year.service";
 import { listTeachers } from "@/server/services/teacher.service";
 import { CreateSubjectForm } from "./create-subject-form";
 import { CreateOfferingForm } from "./create-offering-form";
+import { EditSubjectButton } from "./edit-subject-button";
 
 export default async function SubjectsPage() {
   const session = await requireRolePage("ADMIN");
@@ -38,9 +39,15 @@ export default async function SubjectsPage() {
             ) : (
               <ul className="divide-y divide-slate-100 text-sm">
                 {subjects.map((s) => (
-                  <li key={s.id} className="flex justify-between py-1.5">
-                    <span className="font-medium text-slate-900">{s.code} — {s.name}</span>
-                    <span className="text-xs text-slate-500">Sem {s.semesterNumber} · {Number(s.credits)} credits</span>
+                  <li key={s.id} className="flex flex-wrap items-center justify-between gap-1 py-1.5">
+                    <span className="font-medium text-slate-900">
+                      {s.code} — {s.name}
+                      {s.status === "INACTIVE" ? <span className="ml-1.5 text-xs font-normal text-slate-400">(inactive)</span> : null}
+                    </span>
+                    <span className="flex items-center gap-2 text-xs text-slate-500">
+                      Sem {s.semesterNumber} · {Number(s.credits)} credits
+                      <EditSubjectButton subjectId={s.id} initialName={s.name} initialCredits={Number(s.credits)} initialStatus={s.status} />
+                    </span>
                   </li>
                 ))}
               </ul>

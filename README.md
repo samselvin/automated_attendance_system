@@ -199,6 +199,18 @@ This is being built phase by phase (see the master prompt, Section 54):
         bulk gateway (see `docs/setup-sms.md` for that trade-off). The
         default message wording also changed from "your ward" to "your
         son/daughter", editable anytime from Admin → Settings → SMS.
+      - **Subject CSV import** (Admin → Imports → Subjects) alongside the
+        existing Student/Teacher imports — same preview-then-confirm flow,
+        same per-row error reporting. A subject row can never mismatch its
+        own regulation's semester (the same check `createSubjectOffering`
+        already enforced now also runs at import time), and a duplicate
+        `regulationId`+`code` is caught before anything is saved, whether
+        the clash is against the database or another row in the same file.
+      - **Edit Subject** (name, credits, active/inactive — the three
+        fields safe to change after creation without touching anything
+        already keyed on its code/department/regulation/semester) directly
+        on the Subjects list; the service function already existed, it
+        just had no UI trigger.
 
 ## Documentation
 

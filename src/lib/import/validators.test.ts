@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateTeacherRow, validateStudentRow } from "@/lib/import/validators";
+import { validateTeacherRow, validateStudentRow, validateSubjectRow } from "@/lib/import/validators";
 import { parseCsvText, applyColumnMapping } from "@/lib/import/csv";
 
 describe("validateTeacherRow", () => {
@@ -80,6 +80,58 @@ describe("validateStudentRow", () => {
   it("requires at least one parent contact field set", () => {
     const result = validateStudentRow({ ...validRow, parentMobile: "" });
     expect(result.errors).toContain("parentMobile is required");
+  });
+});
+
+describe("validateSubjectRow", () => {
+  const validRow = {
+    code: "cs301",
+    name: "Database Management Systems",
+    departmentCode: "aids",
+    regulationCode: "r2022",
+    semesterNumber: "3",
+    credits: "3",
+    type: "theory",
+  };
+
+  it("accepts a complete row, uppercasing codes and the type", () => {
+    const result = validateSubjectRow(validRow);
+    expect(result.errors).toEqual([]);
+    expect(result.normalized).toMatchObject({
+      code: "CS301",
+      departmentCode: "AIDS",
+      regulationCode: "R2022",
+      semesterNumber: 3,
+      credits: 3,
+      type: "THEORY",
+    });
+  });
+
+  it("collects every missing required field", () => {
+    const result = validateSubjectRow({});
+    expect(result.normalized).toBeNull();
+    expect(result.errors).toContain("code is required");
+    expect(result.errors).toContain("name is required");
+    expect(result.errors).toContain("departmentCode is required");
+    expect(result.errors).toContain("regulationCode is required");
+    expect(result.errors).toContain("semesterNumber is required");
+    expect(result.errors).toContain("credits is required");
+    expect(result.errors).toContain("type is required");
+  });
+
+  it("rejects an out-of-range semesterNumber", () => {
+    const result = validateSubjectRow({ ...validRow, semesterNumber: "9" });
+    expect(result.errors).toContain("semesterNumber must be an integer 1-8");
+  });
+
+  it("rejects out-of-range credits", () => {
+    const result = validateSubjectRow({ ...validRow, credits: "11" });
+    expect(result.errors).toContain("credits must be a number between 0 and 10");
+  });
+
+  it("rejects an unknown subject type", () => {
+    const result = validateSubjectRow({ ...validRow, type: "SEMINAR" });
+    expect(result.errors[0]).toMatch(/^type must be one of/);
   });
 });
 
