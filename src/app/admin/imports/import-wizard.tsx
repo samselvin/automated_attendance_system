@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const STUDENT_FIELDS = [
@@ -31,14 +32,26 @@ interface ImportJob {
 
 export function ImportWizard() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [entityType, setEntityType] = useState<"STUDENT" | "TEACHER" | "SUBJECT">("STUDENT");
   const [csvText, setCsvText] = useState("");
+  const [sourceFilename, setSourceFilename] = useState<string | null>(null);
   const [job, setJob] = useState<ImportJob | null>(null);
   const [confirmResult, setConfirmResult] = useState<{ imported: number; credentials: { email: string; tempPassword: string }[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fields = entityType === "STUDENT" ? STUDENT_FIELDS : entityType === "TEACHER" ? TEACHER_FIELDS : SUBJECT_FIELDS;
+
+  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+    setError(null);
+    const text = await file.text();
+    setCsvText(text);
+    setSourceFilename(file.name);
+  }
 
   async function handlePreview() {
     setError(null);
@@ -53,7 +66,7 @@ export function ImportWizard() {
     const res = await fetch("/api/imports", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ entityType, csvText, columnMapping }),
+      body: JSON.stringify({ entityType, csvText, columnMapping, sourceFilename: sourceFilename ?? undefined }),
     });
     const body = await res.json().catch(() => null);
     setLoading(false);
@@ -99,6 +112,7 @@ export function ImportWizard() {
             setJob(null);
             setConfirmResult(null);
             setCsvText("");
+            setSourceFilename(null);
           }}
         >
           Start another import
@@ -163,15 +177,36 @@ export function ImportWizard() {
         <option value="SUBJECT">Subjects</option>
       </select>
       <p className="text-xs text-slate-600">
-        Paste CSV with a header row using exactly these column names: <span className="font-mono">{fields.join(", ")}</span>
+        The CSV needs a header row using exactly these column names: <span className="font-mono">{fields.join(", ")}</span>
       </p>
-      <textarea
-        rows={8}
-        value={csvText}
-        onChange={(e) => setCsvText(e.target.value)}
-        placeholder={fields.join(",")}
-        className="w-full rounded-lg border border-slate-300 p-2 font-mono text-xs"
-      />
+
+      <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={handleFileChange} className="hidden" />
+      <div className="flex items-center gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+        <Button type="button" variant="secondary" onClick={() => fileInputRef.current?.click()} className="!px-3 !py-1.5 text-sm">
+          <Upload aria-hidden size={15} strokeWidth={2} className="mr-1.5 inline-block" />
+          Choose CSV file
+        </Button>
+        <span className="truncate text-sm text-slate-600">
+          {sourceFilename ?? "No file selected — pick one from your device, or paste the CSV text below"}
+        </span>
+      </div>
+
+      <details className="text-sm" open={csvText.length > 0}>
+        <summary className="cursor-pointer text-xs font-medium text-slate-600">
+          {csvText ? "CSV content (edit if needed)" : "Or paste the CSV text directly"}
+        </summary>
+        <textarea
+          rows={8}
+          value={csvText}
+          onChange={(e) => {
+            setCsvText(e.target.value);
+            setSourceFilename(null);
+          }}
+          placeholder={fields.join(",")}
+          className="mt-2 w-full rounded-lg border border-slate-300 p-2 font-mono text-xs outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+        />
+      </details>
+
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <Button onClick={handlePreview} disabled={loading || !csvText.trim()}>
         {loading ? "Validating…" : "Preview"}
