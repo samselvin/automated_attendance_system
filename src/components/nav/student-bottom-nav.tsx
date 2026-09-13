@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, ClipboardList, GraduationCap, CalendarDays, User } from "lucide-react";
 
 const ITEMS = [
-  { href: "/student", label: "Home", icon: "🏠" },
-  { href: "/student/attendance", label: "Attendance", icon: "📋" },
-  { href: "/student/academics", label: "Academics", icon: "🎓" },
-  { href: "/student/timetable", label: "Timetable", icon: "🗓️" },
-  { href: "/student/profile", label: "Profile", icon: "👤" },
+  { href: "/student", label: "Home", Icon: Home },
+  { href: "/student/attendance", label: "Attendance", Icon: ClipboardList },
+  { href: "/student/academics", label: "Academics", Icon: GraduationCap },
+  { href: "/student/timetable", label: "Timetable", Icon: CalendarDays },
+  { href: "/student/profile", label: "Profile", Icon: User },
 ];
 
 export function StudentBottomNav() {
@@ -26,9 +27,7 @@ export function StudentBottomNav() {
               active ? "text-indigo-600" : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            <span aria-hidden className="text-lg leading-none">
-              {item.icon}
-            </span>
+            <item.Icon aria-hidden size={20} strokeWidth={active ? 2.25 : 1.75} />
             {item.label}
           </Link>
         );

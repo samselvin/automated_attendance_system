@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, FileEdit, GraduationCap, CalendarDays } from "lucide-react";
 
 const ITEMS = [
-  { href: "/teacher", label: "Today", icon: "🏠" },
-  { href: "/teacher/leave-requests", label: "Leave/OD", icon: "📝" },
-  { href: "/teacher/marks", label: "Marks", icon: "🎓" },
-  { href: "/teacher/timetable-requests", label: "Requests", icon: "🗓️" },
+  { href: "/teacher", label: "Today", Icon: Home },
+  { href: "/teacher/leave-requests", label: "Leave/OD", Icon: FileEdit },
+  { href: "/teacher/marks", label: "Marks", Icon: GraduationCap },
+  { href: "/teacher/timetable-requests", label: "Requests", Icon: CalendarDays },
 ];
 
 export function TeacherBottomNav() {
@@ -25,9 +26,7 @@ export function TeacherBottomNav() {
               active ? "text-indigo-600" : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            <span aria-hidden className="text-lg leading-none">
-              {item.icon}
-            </span>
+            <item.Icon aria-hidden size={20} strokeWidth={active ? 2.25 : 1.75} />
             {item.label}
           </Link>
         );

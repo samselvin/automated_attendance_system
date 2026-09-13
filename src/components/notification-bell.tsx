@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Bell } from "lucide-react";
 
 interface NotificationItem {
   id: string;
@@ -60,11 +61,9 @@ export function NotificationBell() {
         type="button"
         onClick={handleOpen}
         aria-label="Notifications"
-        className="relative rounded-full p-1.5 text-slate-600 hover:bg-slate-100"
+        className="relative rounded-full p-1.5 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
       >
-        <span className="text-lg" aria-hidden>
-          🔔
-        </span>
+        <Bell aria-hidden size={20} strokeWidth={1.75} />
         {unreadCount > 0 ? (
           <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">
             {unreadCount > 9 ? "9+" : unreadCount}
