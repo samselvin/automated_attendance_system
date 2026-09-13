@@ -4,7 +4,6 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { listClasses } from "@/server/services/class.service";
 import { WeeklyAttendanceReport } from "@/components/reports/weekly-attendance-report";
 import { ClassAttendanceReport } from "./class-attendance-report";
-import { LowAttendanceReport } from "./low-attendance-report";
 
 export default async function ReportsPage() {
   const session = await requireRolePage("ADMIN");
@@ -25,10 +24,6 @@ export default async function ReportsPage() {
         <Card className="print:hidden">
           <CardHeader title="Class attendance report" />
           <ClassAttendanceReport classes={classOptions} />
-        </Card>
-        <Card className="print:hidden">
-          <CardHeader title="Low-attendance students (below Safe threshold)" />
-          <LowAttendanceReport />
         </Card>
       </main>
     </div>

@@ -74,12 +74,13 @@ cutoff, and a few other college-wide rules can be changed any time from
   matching the department's existing paper form exactly (daily hours for
   Monday–Friday, a weekly total, and a running cumulative total since the
   semester began, plus the percentage-band summary and Class
-  Advisor/HOD/Principal signature lines), a class's attendance report
-  over any date range, and a college/department low-attendance list — all
-  with CSV download, and the weekly and class reports also have a
-  print-friendly view. A class's own active Class Advisor can generate
-  its Weekly Attendance Report too, from their Home screen. Excel/PDF
-  export aren't built yet — CSV and the browser's own Print are what's
+  Advisor/HOD/Principal signature lines), and a class's attendance report
+  over any date range — both with CSV download and a print-friendly view.
+  A class's own active Class Advisor can generate its Weekly Attendance
+  Report too, from their Home screen. (A separate low-attendance-alert
+  cron job still runs in the background per Section 32 — it's just not a
+  screen here.) Excel/PDF export aren't built yet — CSV and the browser's
+  own Print are what's
   available.
 - **Events** (`/admin/events`) — announce a workshop, seminar, exam,
   holiday, sports day, or cultural event to the whole college, one
