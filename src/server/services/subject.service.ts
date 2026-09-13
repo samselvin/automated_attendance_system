@@ -1,7 +1,7 @@
 import type { Session } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { writeAuditLog, toAuditJson } from "@/lib/audit";
-import { adminDepartmentScope, canAccessDepartment, ForbiddenError } from "@/lib/rbac";
+import { adminDepartmentScope, canAccessDepartment, isAdmin, isTeacher, ForbiddenError } from "@/lib/rbac";
 import { BadRequestError, ConflictError, NotFoundError } from "@/lib/api-utils";
 import type {
   CreateSubjectInput,
@@ -90,16 +90,40 @@ export async function updateSubject(
   });
 }
 
+/**
+ * Section 17/42: a teacher may only ever see their own offerings — the
+ * `teacherId` filter below is not a convenience default, it's an
+ * override. A teacher calling this with a different (or no) teacherId
+ * still only gets their own, since the API route reads this straight
+ * from the query string and a teacher hitting it directly is exactly
+ * the case "hiding buttons is not security" is about (Section 42).
+ */
 export async function listSubjectOfferings(
   session: Session,
   filters: { classId?: string; studentGroupId?: string; semesterId?: string; teacherId?: string } = {}
 ) {
   const { teacherId, ...rest } = filters;
-  return prisma.subjectOffering.findMany({
-    where: { ...rest, ...(teacherId ? { teachers: { some: { teacherId } } } : {}) },
-    include: { subject: true, teachers: { include: { teacher: true } }, class: true },
-    orderBy: { createdAt: "desc" },
-  });
+
+  if (isTeacher(session)) {
+    if (!session.user.teacherId) throw new ForbiddenError("Not authorized");
+    return prisma.subjectOffering.findMany({
+      where: { ...rest, teachers: { some: { teacherId: session.user.teacherId } } },
+      include: { subject: true, teachers: { include: { teacher: true } }, class: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  if (isAdmin(session)) {
+    const scope = adminDepartmentScope(session);
+    const departmentFilter = scope === "ALL" ? {} : { subject: { departmentId: { in: scope } } };
+    return prisma.subjectOffering.findMany({
+      where: { ...rest, ...departmentFilter, ...(teacherId ? { teachers: { some: { teacherId } } } : {}) },
+      include: { subject: true, teachers: { include: { teacher: true } }, class: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  throw new ForbiddenError("Not authorized");
 }
 
 export async function createSubjectOffering(
