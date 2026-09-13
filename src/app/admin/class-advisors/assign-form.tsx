@@ -41,28 +41,28 @@ export function AssignAdvisorForm({ classes, teachers }: { classes: Option[]; te
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-slate-300 p-3">
       <div>
-        <label className="block text-xs font-medium text-slate-600">Class</label>
-        <select value={classId} onChange={(e) => setClassId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <label className="block text-xs font-medium text-slate-700">Class</label>
+        <select value={classId} onChange={(e) => setClassId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {classes.map((c) => (
             <option key={c.id} value={c.id}>{c.label}</option>
           ))}
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600">Teacher</label>
-        <select value={teacherId} onChange={(e) => setTeacherId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <label className="block text-xs font-medium text-slate-700">Teacher</label>
+        <select value={teacherId} onChange={(e) => setTeacherId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {teachers.map((t) => (
             <option key={t.id} value={t.id}>{t.label}</option>
           ))}
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600">Effective from</label>
-        <input type="date" required value={effectiveFrom} onChange={(e) => setEffectiveFrom(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+        <label className="block text-xs font-medium text-slate-700">Effective from</label>
+        <input type="date" required value={effectiveFrom} onChange={(e) => setEffectiveFrom(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600">Mode</label>
-        <select value={mode} onChange={(e) => setMode(e.target.value as "assign" | "change")} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <label className="block text-xs font-medium text-slate-700">Mode</label>
+        <select value={mode} onChange={(e) => setMode(e.target.value as "assign" | "change")} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           <option value="assign">Assign (add)</option>
           <option value="change">Change (replace current)</option>
         </select>

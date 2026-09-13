@@ -84,7 +84,7 @@ export default async function AdminDashboard() {
               ))}
             </ul>
           )}
-          <Link href="/admin/class-advisors" className="mt-2 inline-block text-xs font-medium text-slate-600 underline">
+          <Link href="/admin/class-advisors" className="mt-2 inline-block text-xs font-medium text-slate-700 underline">
             Manage postings
           </Link>
         </Card>
@@ -107,14 +107,14 @@ export default async function AdminDashboard() {
                 {recentImports.map((job) => (
                   <li key={job.id} className="flex justify-between">
                     <span>{job.entityType}</span>
-                    <span className="text-slate-500">
+                    <span className="text-slate-600">
                       {job.status} · {job.validRows}/{job.totalRows}
                     </span>
                   </li>
                 ))}
               </ul>
             )}
-            <Link href="/admin/imports" className="mt-2 inline-block text-xs font-medium text-slate-600 underline">
+            <Link href="/admin/imports" className="mt-2 inline-block text-xs font-medium text-slate-700 underline">
               View all imports
             </Link>
           </Card>

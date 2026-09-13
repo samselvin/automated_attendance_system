@@ -23,7 +23,7 @@ export function LowAttendanceReport() {
       .catch(() => setRows([]));
   }, []);
 
-  if (!rows) return <p className="text-sm text-slate-400">Loading…</p>;
+  if (!rows) return <p className="text-sm text-slate-500">Loading…</p>;
 
   return (
     <div className="space-y-2">
@@ -33,7 +33,7 @@ export function LowAttendanceReport() {
         </Button>
       </div>
       {rows.length === 0 ? (
-        <p className="text-sm text-slate-400">No students currently below the safe threshold.</p>
+        <p className="text-sm text-slate-500">No students currently below the safe threshold.</p>
       ) : (
         <ul className="divide-y divide-slate-100 text-sm">
           {rows.map((r) => (

@@ -24,7 +24,7 @@ export default async function ImportsPage() {
           <Card className="!p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="border-b border-slate-100 text-xs text-slate-500">
+                <thead className="border-b border-slate-100 text-xs text-slate-600">
                   <tr>
                     <th className="px-4 py-2">Type</th>
                     <th className="px-4 py-2">Status</th>
@@ -39,10 +39,10 @@ export default async function ImportsPage() {
                       <td className="px-4 py-2">
                         <Badge label={j.status} variant={j.status === "CONFIRMED" ? "safe" : "neutral"} />
                       </td>
-                      <td className="px-4 py-2 text-slate-500">
+                      <td className="px-4 py-2 text-slate-600">
                         {j.validRows}/{j.totalRows}
                       </td>
-                      <td className="px-4 py-2 text-slate-500">{j.createdAt.toLocaleString()}</td>
+                      <td className="px-4 py-2 text-slate-600">{j.createdAt.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>

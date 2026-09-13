@@ -52,7 +52,7 @@ export default async function StudentAcademicsPage() {
                 if (items.length === 0) return null;
                 return (
                   <div key={group} className="mb-2">
-                    <p className="text-xs font-medium text-slate-500">{GROUP_LABELS[group] ?? group}</p>
+                    <p className="text-xs font-medium text-slate-600">{GROUP_LABELS[group] ?? group}</p>
                     <ul className="mt-1 space-y-1">
                       {items.map((c) => (
                         <li key={c.id} className="flex justify-between text-sm">

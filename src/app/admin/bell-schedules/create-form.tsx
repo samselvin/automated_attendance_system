@@ -72,7 +72,7 @@ export function CreateBellScheduleForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2 rounded-lg border border-dashed border-slate-300 p-3">
-      <input required placeholder="Schedule name (e.g. Regular Weekday)" value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+      <input required placeholder="Schedule name (e.g. Regular Weekday)" value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
       <div className="max-h-72 space-y-1 overflow-y-auto">
         {slots.map((s, i) => (
           <div key={i} className="grid grid-cols-6 gap-1 text-xs">

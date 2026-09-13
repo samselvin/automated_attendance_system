@@ -34,23 +34,23 @@ export function CreateDepartmentForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-slate-300 p-3">
       <div>
-        <label className="block text-xs font-medium text-slate-600">Code</label>
+        <label className="block text-xs font-medium text-slate-700">Code</label>
         <input
           required
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="AIDS"
-          className="mt-1 w-28 rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 w-28 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
         />
       </div>
       <div className="flex-1">
-        <label className="block text-xs font-medium text-slate-600">Name</label>
+        <label className="block text-xs font-medium text-slate-700">Name</label>
         <input
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Artificial Intelligence and Data Science"
-          className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
         />
       </div>
       {error ? <p className="w-full text-xs text-red-600">{error}</p> : null}

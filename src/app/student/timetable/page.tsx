@@ -47,7 +47,7 @@ export default async function StudentTimetablePage({
                 key={d}
                 href={`/student/timetable?date=${d}`}
                 className={`rounded-lg py-2 text-center text-xs font-medium ${
-                  isSelected ? "bg-slate-900 text-white" : isToday ? "bg-slate-200 text-slate-900" : "bg-white text-slate-600 border border-slate-200"
+                  isSelected ? "bg-slate-900 text-white" : isToday ? "bg-slate-200 text-slate-900" : "bg-white text-slate-700 border border-slate-200"
                 }`}
               >
                 {label}
@@ -67,11 +67,11 @@ export default async function StudentTimetablePage({
                 <li key={entry.timetableEntryId} className="py-3 text-sm">
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-slate-900">{entry.subjectName}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {entry.scheduledStart}–{entry.scheduledEnd}
                     </p>
                   </div>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="mt-0.5 text-xs text-slate-600">
                     {entry.teacherName ?? "—"} {entry.roomName ? `· ${entry.roomName}` : ""}
                   </p>
                 </li>

@@ -31,11 +31,11 @@ export default async function StudentEventsPage() {
                   <p className="text-sm font-medium text-slate-900">
                     {e.title} <Badge label={e.type} variant={TYPE_VARIANT[e.type] ?? "info"} />
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="mt-0.5 text-xs text-slate-600">
                     {e.startAt.toLocaleString()} – {e.endAt.toLocaleString()}
                     {e.venue ? ` · ${e.venue}` : ""}
                   </p>
-                  {e.description ? <p className="mt-1 text-xs text-slate-600">{e.description}</p> : null}
+                  {e.description ? <p className="mt-1 text-xs text-slate-700">{e.description}</p> : null}
                 </li>
               ))}
             </ul>
@@ -43,10 +43,10 @@ export default async function StudentEventsPage() {
         </Card>
         {past.length > 0 ? (
           <Card>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Past</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Past</p>
             <ul className="divide-y divide-slate-100">
               {past.map((e) => (
-                <li key={e.id} className="py-2 text-sm text-slate-500">
+                <li key={e.id} className="py-2 text-sm text-slate-600">
                   {e.title} — {e.startAt.toLocaleDateString()}
                 </li>
               ))}

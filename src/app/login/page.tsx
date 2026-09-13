@@ -18,10 +18,10 @@ export default async function LoginPage({
   const message = error ? ERROR_MESSAGES[error] ?? ERROR_MESSAGES.Default : null;
 
   return (
-    <main className="flex flex-1 items-center justify-center px-4 py-16">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-slate-900">College Attendance</h1>
-        <p className="mt-1 text-sm text-slate-500">
+    <main className="flex flex-1 items-center justify-center bg-gradient-to-b from-indigo-50/60 via-slate-50 to-slate-50 px-4 py-16">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/50">
+        <h1 className="text-xl font-semibold tracking-tight text-slate-900">College Attendance</h1>
+        <p className="mt-1 text-sm text-slate-600">
           Sign in with your college email and password, or your college Google account.
         </p>
 
@@ -35,7 +35,7 @@ export default async function LoginPage({
 
         <div className="my-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs text-slate-400">or</span>
+          <span className="text-xs text-slate-500">or</span>
           <div className="h-px flex-1 bg-slate-200" />
         </div>
 

@@ -66,7 +66,7 @@ export default async function TeacherHome() {
                       {entry.subjectName} · {entry.className}
                       {entry.groupName ? ` (${entry.groupName})` : ""}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {entry.scheduledStart}–{entry.scheduledEnd} {entry.roomName ? `· ${entry.roomName}` : ""}
                       {entry.isSubstituting ? " · Substituting" : ""}
                     </p>
@@ -92,18 +92,18 @@ export default async function TeacherHome() {
               {advisorSummary.map((s) => (
                 <li key={s.classId} className="flex items-center justify-between text-sm">
                   <span className="font-medium text-slate-900">{s.className}</span>
-                  <span className="text-slate-500">
+                  <span className="text-slate-600">
                     {s.studentCount} students · {s.pendingLeave} pending leave/OD
                   </span>
                 </li>
               ))}
             </ul>
             <div className="mt-2 flex flex-wrap gap-3">
-              <Link href="/teacher/leave-requests" className="text-xs font-medium text-slate-600 underline">
+              <Link href="/teacher/leave-requests" className="text-xs font-medium text-slate-700 underline">
                 Review leave/OD requests
               </Link>
               {advisorSummary.map((s) => (
-                <Link key={s.classId} href={`/teacher/class-report?classId=${s.classId}`} className="text-xs font-medium text-slate-600 underline">
+                <Link key={s.classId} href={`/teacher/class-report?classId=${s.classId}`} className="text-xs font-medium text-slate-700 underline">
                   Weekly report — {s.className}
                 </Link>
               ))}
@@ -114,7 +114,7 @@ export default async function TeacherHome() {
         {canManageEvents ? (
           <Card>
             <CardHeader title="Events" />
-            <Link href="/teacher/events" className="text-xs font-medium text-slate-600 underline">
+            <Link href="/teacher/events" className="text-xs font-medium text-slate-700 underline">
               Create or publish an event
             </Link>
           </Card>

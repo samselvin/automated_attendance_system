@@ -43,7 +43,7 @@ export function EditSubjectButton({
 
   if (!editing) {
     return (
-      <button type="button" onClick={() => setEditing(true)} className="text-xs font-medium text-slate-500 underline">
+      <button type="button" onClick={() => setEditing(true)} className="text-xs font-medium text-slate-600 underline">
         Edit
       </button>
     );
@@ -68,7 +68,7 @@ export function EditSubjectButton({
       <Button className="!px-2 !py-1 text-xs" disabled={loading} onClick={handleSave}>
         {loading ? "Saving…" : "Save"}
       </Button>
-      <button type="button" onClick={() => setEditing(false)} className="text-xs text-slate-400">
+      <button type="button" onClick={() => setEditing(false)} className="text-xs text-slate-500">
         Cancel
       </button>
       {error ? <span className="w-full text-xs text-red-600">{error}</span> : null}

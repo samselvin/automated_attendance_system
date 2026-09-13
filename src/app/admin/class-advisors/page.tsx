@@ -32,15 +32,15 @@ export default async function ClassAdvisorsPage() {
                 action={active.length === 0 ? <Badge label="No advisor" variant="warning" /> : undefined}
               />
               {postings.length === 0 ? (
-                <p className="text-sm text-slate-400">No postings yet.</p>
+                <p className="text-sm text-slate-500">No postings yet.</p>
               ) : (
                 <ul className="space-y-1 text-sm">
                   {postings.map((p) => (
                     <li key={p.id} className="flex items-center justify-between">
-                      <span className={p.status === "ACTIVE" ? "font-medium text-slate-900" : "text-slate-400"}>
+                      <span className={p.status === "ACTIVE" ? "font-medium text-slate-900" : "text-slate-500"}>
                         {p.teacher.fullName}
                       </span>
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-500">
                         {new Date(p.effectiveFrom).toLocaleDateString()} –{" "}
                         {p.effectiveTo ? new Date(p.effectiveTo).toLocaleDateString() : "Current"}
                       </span>

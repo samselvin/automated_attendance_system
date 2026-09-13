@@ -22,7 +22,7 @@ export default async function SettingsPage() {
     <div className="flex min-h-full flex-col">
       <TopBar title="Settings" showNotifications={false} />
       <main className="flex-1 space-y-4 p-4 sm:p-6">
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-500">
           College-wide rules (Section 22) — nothing here is hard-coded in application logic. Every change is
           audit-logged.
         </p>

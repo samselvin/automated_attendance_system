@@ -6,7 +6,7 @@ import { getMyStudentProfile } from "@/server/services/student-self.service";
 function Field({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
-      <p className="text-xs text-slate-500">{label}</p>
+      <p className="text-xs text-slate-600">{label}</p>
       <p className="text-sm font-medium text-slate-900">{value || "—"}</p>
     </div>
   );
@@ -45,7 +45,7 @@ export default async function StudentProfilePage() {
           </div>
         </Card>
 
-        <p className="text-center text-xs text-slate-400">
+        <p className="text-center text-xs text-slate-500">
           Spotted an error in your official details? Contact your Class Advisor or the college office to correct it.
         </p>
       </main>

@@ -55,24 +55,24 @@ export function CreateTeacherForm({ departments }: { departments: Option[] }) {
       ) : null}
       <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-2">
         <div>
-          <label className="block text-xs font-medium text-slate-600">College email</label>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">College email</label>
+          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Employee ID</label>
-          <input required value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} className="mt-1 w-28 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">Employee ID</label>
+          <input required value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} className="mt-1 w-28 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Full name</label>
-          <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">Full name</label>
+          <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Designation</label>
-          <input value={designation} onChange={(e) => setDesignation(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">Designation</label>
+          <input value={designation} onChange={(e) => setDesignation(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Department</label>
-          <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <label className="block text-xs font-medium text-slate-700">Department</label>
+          <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             {departments.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.label}

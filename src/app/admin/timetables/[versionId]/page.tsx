@@ -63,7 +63,7 @@ export default async function TimetableVersionPage({ params }: { params: Promise
                     <p className="font-medium text-slate-900">
                       {e.subjectOffering.subject.name} · {e.weekday ?? `Day ${e.dayOrder}`}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {e.slots.map((s) => s.bellScheduleSlot.label).join(", ")} ·{" "}
                       {e.teachers.map((t) => t.teacher.fullName).join(", ")}
                     </p>

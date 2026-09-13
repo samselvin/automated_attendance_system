@@ -46,42 +46,42 @@ export function ApplyLeaveForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-slate-600">Type</label>
+        <label className="block text-xs font-medium text-slate-700">Type</label>
         <select
           value={type}
           onChange={(e) => setType(e.target.value as typeof type)}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
         >
           <option value="LEAVE">Leave</option>
           <option value="MEDICAL">Medical</option>
           <option value="ON_DUTY">On Duty</option>
         </select>
         {type === "ON_DUTY" ? (
-          <p className="mt-1 text-xs text-slate-400">On Duty requests need approval from both your Class Advisor and HOD.</p>
+          <p className="mt-1 text-xs text-slate-500">On Duty requests need approval from both your Class Advisor and HOD.</p>
         ) : (
-          <p className="mt-1 text-xs text-slate-400">Leave/Medical requests need approval from your Class Advisor or HOD.</p>
+          <p className="mt-1 text-xs text-slate-500">Leave/Medical requests need approval from your Class Advisor or HOD.</p>
         )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-slate-600">From date</label>
+          <label className="block text-xs font-medium text-slate-700">From date</label>
           <input
             type="date"
             required
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">To date</label>
+          <label className="block text-xs font-medium text-slate-700">To date</label>
           <input
             type="date"
             value={toDate}
             min={fromDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
       </div>
@@ -92,14 +92,14 @@ export function ApplyLeaveForm() {
       </label>
 
       <div>
-        <label className="block text-xs font-medium text-slate-600">Reason</label>
+        <label className="block text-xs font-medium text-slate-700">Reason</label>
         <textarea
           required
           minLength={5}
           rows={4}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
         />
       </div>
 

@@ -86,7 +86,7 @@ export function RosterForm({
 
   if (alreadySubmitted) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-4 text-center text-sm text-slate-600">
+      <div className="rounded-xl border border-slate-200 bg-white p-4 text-center text-sm text-slate-700">
         Attendance for this session has already been submitted.
       </div>
     );
@@ -101,23 +101,23 @@ export function RosterForm({
           <div className="mt-3 grid grid-cols-4 gap-2 text-center text-sm">
             <div>
               <p className="font-semibold text-slate-900">{students.length}</p>
-              <p className="text-xs text-slate-500">Total</p>
+              <p className="text-xs text-slate-600">Total</p>
             </div>
             <div>
               <p className="font-semibold text-emerald-600">{counts.PRESENT}</p>
-              <p className="text-xs text-slate-500">Present</p>
+              <p className="text-xs text-slate-600">Present</p>
             </div>
             <div>
               <p className="font-semibold text-red-600">{counts.ABSENT}</p>
-              <p className="text-xs text-slate-500">Absent</p>
+              <p className="text-xs text-slate-600">Absent</p>
             </div>
             <div>
               <p className="font-semibold text-blue-600">{counts.APPROVED_LEAVE + counts.ON_DUTY}</p>
-              <p className="text-xs text-slate-500">Leave/OD</p>
+              <p className="text-xs text-slate-600">Leave/OD</p>
             </div>
           </div>
           {absentees.length > 0 ? (
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 text-xs text-slate-600">
               Absentees: {absentees.map((a) => a.rollNumber).join(", ")}
             </p>
           ) : null}
@@ -142,7 +142,7 @@ export function RosterForm({
         placeholder="Search roll no / name"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       />
       <div className="flex gap-2">
         <Button variant="secondary" className="flex-1 text-xs" onClick={() => setAll("PRESENT")}>
@@ -159,7 +159,7 @@ export function RosterForm({
             <li key={s.studentId} className="flex items-center justify-between px-3 py-2">
               <div>
                 <p className="text-sm font-medium text-slate-900">{s.rollNumber}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-600">
                   {s.fullName}
                   {s.isPreFilledFromLeave ? " · pre-filled from approved leave" : ""}
                 </p>
@@ -177,7 +177,7 @@ export function RosterForm({
                           : status === "ABSENT"
                             ? "bg-red-600 text-white"
                             : "bg-blue-600 text-white"
-                        : "bg-slate-100 text-slate-500"
+                        : "bg-slate-100 text-slate-600"
                     }`}
                   >
                     {STATUS_LABELS[status]}

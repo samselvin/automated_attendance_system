@@ -51,23 +51,23 @@ export function CreateOfferingForm({
 
   return (
     <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-2 rounded-lg border border-dashed border-slate-300 p-3 sm:grid-cols-5">
-      <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+      <select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
         {subjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
       </select>
-      <select value={classId} onChange={(e) => setClassId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+      <select value={classId} onChange={(e) => setClassId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
         {classes.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
       </select>
-      <select value={academicYearId} onChange={(e) => setAcademicYearId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+      <select value={academicYearId} onChange={(e) => setAcademicYearId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
         {academicYears.map((y) => <option key={y.id} value={y.id}>{y.label}</option>)}
       </select>
-      <select value={semesterId} onChange={(e) => setSemesterId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+      <select value={semesterId} onChange={(e) => setSemesterId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
         {semesters.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
       </select>
       <select
         multiple
         value={teacherIds}
         onChange={(e) => setTeacherIds(Array.from(e.target.selectedOptions, (o) => o.value))}
-        className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       >
         {teachers.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
       </select>

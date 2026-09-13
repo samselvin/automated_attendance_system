@@ -19,7 +19,7 @@ export default async function AuditLogsPage() {
     <div className="flex min-h-full flex-col">
       <TopBar title="Audit Logs" showNotifications={false} />
       <main className="flex-1 space-y-4 p-4 sm:p-6">
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-500">
           Append-only record of every sensitive action (Section 44). Nothing here can be edited or deleted through the app.
         </p>
         <AuditLogViewer actions={facets.actions} entityTypes={facets.entityTypes} />

@@ -83,12 +83,12 @@ export function EventForm({ departments, classes }: { departments: Option[]; cla
     <form onSubmit={handleSubmit} className="rounded-lg border border-dashed border-slate-300 p-3">
       <div className="flex flex-wrap items-end gap-2">
         <div>
-          <label className="block text-xs font-medium text-slate-600">Title</label>
-          <input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">Title</label>
+          <input required value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Type</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <label className="block text-xs font-medium text-slate-700">Type</label>
+          <select value={type} onChange={(e) => setType(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             {EVENT_TYPES.map((t) => (
               <option key={t} value={t}>
                 {t}
@@ -97,11 +97,11 @@ export function EventForm({ departments, classes }: { departments: Option[]; cla
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Audience</label>
+          <label className="block text-xs font-medium text-slate-700">Audience</label>
           <select
             value={audienceType}
             onChange={(e) => setAudienceType(e.target.value as typeof audienceType)}
-            className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+            className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="COLLEGE">Whole college</option>
             <option value="DEPARTMENT">One department</option>
@@ -113,8 +113,8 @@ export function EventForm({ departments, classes }: { departments: Option[]; cla
 
         {audienceType === "DEPARTMENT" || audienceType === "YEAR" ? (
           <div>
-            <label className="block text-xs font-medium text-slate-600">Department</label>
-            <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+            <label className="block text-xs font-medium text-slate-700">Department</label>
+            <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
               {departments.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.label}
@@ -125,8 +125,8 @@ export function EventForm({ departments, classes }: { departments: Option[]; cla
         ) : null}
         {audienceType === "YEAR" ? (
           <div>
-            <label className="block text-xs font-medium text-slate-600">Year</label>
-            <select value={yearOfStudy} onChange={(e) => setYearOfStudy(Number(e.target.value))} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+            <label className="block text-xs font-medium text-slate-700">Year</label>
+            <select value={yearOfStudy} onChange={(e) => setYearOfStudy(Number(e.target.value))} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
               {[1, 2, 3, 4].map((y) => (
                 <option key={y} value={y}>
                   Year {y}
@@ -137,14 +137,14 @@ export function EventForm({ departments, classes }: { departments: Option[]; cla
         ) : null}
         {audienceType === "CLASS" || audienceType === "GROUP" ? (
           <div>
-            <label className="block text-xs font-medium text-slate-600">Class</label>
+            <label className="block text-xs font-medium text-slate-700">Class</label>
             <select
               value={classId}
               onChange={(e) => {
                 setClassId(e.target.value);
                 if (audienceType === "GROUP") loadGroups(e.target.value);
               }}
-              className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+              className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
             >
               {classes.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -156,8 +156,8 @@ export function EventForm({ departments, classes }: { departments: Option[]; cla
         ) : null}
         {audienceType === "GROUP" ? (
           <div>
-            <label className="block text-xs font-medium text-slate-600">Group</label>
-            <select value={studentGroupId} onChange={(e) => setStudentGroupId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+            <label className="block text-xs font-medium text-slate-700">Group</label>
+            <select value={studentGroupId} onChange={(e) => setStudentGroupId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
               <option value="">Select a class first</option>
               {groups.map((g) => (
                 <option key={g.id} value={g.id}>
@@ -169,33 +169,33 @@ export function EventForm({ departments, classes }: { departments: Option[]; cla
         ) : null}
 
         <div>
-          <label className="block text-xs font-medium text-slate-600">Start date</label>
-          <input required type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">Start date</label>
+          <input required type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Start time</label>
-          <input required type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">Start time</label>
+          <input required type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">End date</label>
-          <input required type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">End date</label>
+          <input required type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">End time</label>
-          <input required type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">End time</label>
+          <input required type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-600">Venue</label>
-          <input value={venue} onChange={(e) => setVenue(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <label className="block text-xs font-medium text-slate-700">Venue</label>
+          <input value={venue} onChange={(e) => setVenue(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </div>
-        <label className="flex items-center gap-1.5 pb-1.5 text-xs text-slate-600">
+        <label className="flex items-center gap-1.5 pb-1.5 text-xs text-slate-700">
           <input type="checkbox" checked={affectsCalendar} onChange={(e) => setAffectsCalendar(e.target.checked)} />
           Affects classes (holiday/OD)
         </label>
       </div>
       <div className="mt-2">
-        <label className="block text-xs font-medium text-slate-600">Description</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+        <label className="block text-xs font-medium text-slate-700">Description</label>
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
       </div>
       {error ? <p className="mt-2 text-xs text-red-600">{error}</p> : null}
       <Button type="submit" disabled={loading} className="mt-2 text-sm">

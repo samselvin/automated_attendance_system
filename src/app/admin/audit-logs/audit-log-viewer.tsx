@@ -86,9 +86,9 @@ export function AuditLogViewer({ actions, entityTypes }: { actions: string[]; en
           load(1);
         }}
       >
-        <label className="flex flex-col text-xs text-slate-500">
+        <label className="flex flex-col text-xs text-slate-600">
           Action
-          <select value={action} onChange={(e) => setAction(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <select value={action} onChange={(e) => setAction(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             <option value="">All</option>
             {actions.map((a) => (
               <option key={a} value={a}>
@@ -97,9 +97,9 @@ export function AuditLogViewer({ actions, entityTypes }: { actions: string[]; en
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-xs text-slate-500">
+        <label className="flex flex-col text-xs text-slate-600">
           Entity type
-          <select value={entityType} onChange={(e) => setEntityType(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <select value={entityType} onChange={(e) => setEntityType(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             <option value="">All</option>
             {entityTypes.map((t) => (
               <option key={t} value={t}>
@@ -108,13 +108,13 @@ export function AuditLogViewer({ actions, entityTypes }: { actions: string[]; en
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-xs text-slate-500">
+        <label className="flex flex-col text-xs text-slate-600">
           From
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </label>
-        <label className="flex flex-col text-xs text-slate-500">
+        <label className="flex flex-col text-xs text-slate-600">
           To
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </label>
         <Button type="submit" disabled={loading} className="text-sm">
           {loading ? "Loading…" : "Filter"}
@@ -128,13 +128,13 @@ export function AuditLogViewer({ actions, entityTypes }: { actions: string[]; en
 
       <div className="mt-4">
         {!rows ? (
-          <p className="text-sm text-slate-400">Loading…</p>
+          <p className="text-sm text-slate-500">Loading…</p>
         ) : rows.length === 0 ? (
           <EmptyState title="No audit log entries match these filters" />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 text-xs text-slate-500">
+              <thead className="border-b border-slate-200 text-xs text-slate-600">
                 <tr>
                   <th className="py-1.5 pr-2">When</th>
                   <th className="py-1.5 pr-2">Action</th>
@@ -146,14 +146,14 @@ export function AuditLogViewer({ actions, entityTypes }: { actions: string[]; en
               <tbody className="divide-y divide-slate-100">
                 {rows.map((r) => (
                   <tr key={r.id}>
-                    <td className="whitespace-nowrap py-1.5 pr-2 text-slate-500">{new Date(r.createdAt).toLocaleString()}</td>
+                    <td className="whitespace-nowrap py-1.5 pr-2 text-slate-600">{new Date(r.createdAt).toLocaleString()}</td>
                     <td className="py-1.5 pr-2 font-medium">{r.action}</td>
-                    <td className="py-1.5 pr-2 text-slate-500">
+                    <td className="py-1.5 pr-2 text-slate-600">
                       {r.entityType}
                       {r.entityId ? ` · ${r.entityId.slice(0, 8)}…` : ""}
                     </td>
                     <td className="py-1.5 pr-2">{r.actor ? r.actor.email : "system"}</td>
-                    <td className="py-1.5 text-slate-500">{r.reason ?? "—"}</td>
+                    <td className="py-1.5 text-slate-600">{r.reason ?? "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -163,7 +163,7 @@ export function AuditLogViewer({ actions, entityTypes }: { actions: string[]; en
       </div>
 
       {rows && totalPages > 1 ? (
-        <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+        <div className="mt-3 flex items-center justify-between text-xs text-slate-600">
           <span>
             Page {page} of {totalPages} · {total} entries
           </span>

@@ -40,8 +40,8 @@ export function CreateClassForm({ departments, academicYears }: { departments: O
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-slate-300 p-3">
       <div>
-        <label className="block text-xs font-medium text-slate-600">Department</label>
-        <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <label className="block text-xs font-medium text-slate-700">Department</label>
+        <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {departments.map((d) => (
             <option key={d.id} value={d.id}>
               {d.label}
@@ -50,8 +50,8 @@ export function CreateClassForm({ departments, academicYears }: { departments: O
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600">Academic year</label>
-        <select value={academicYearId} onChange={(e) => setAcademicYearId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <label className="block text-xs font-medium text-slate-700">Academic year</label>
+        <select value={academicYearId} onChange={(e) => setAcademicYearId(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {academicYears.map((y) => (
             <option key={y.id} value={y.id}>
               {y.label}
@@ -60,8 +60,8 @@ export function CreateClassForm({ departments, academicYears }: { departments: O
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600">Year</label>
-        <select value={yearOfStudy} onChange={(e) => setYearOfStudy(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <label className="block text-xs font-medium text-slate-700">Year</label>
+        <select value={yearOfStudy} onChange={(e) => setYearOfStudy(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {[1, 2, 3, 4].map((y) => (
             <option key={y} value={y}>
               {y}
@@ -70,8 +70,8 @@ export function CreateClassForm({ departments, academicYears }: { departments: O
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600">Section</label>
-        <input required value={section} onChange={(e) => setSection(e.target.value)} placeholder="A" className="mt-1 w-16 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+        <label className="block text-xs font-medium text-slate-700">Section</label>
+        <input required value={section} onChange={(e) => setSection(e.target.value)} placeholder="A" className="mt-1 w-16 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
       </div>
       {error ? <p className="w-full text-xs text-red-600">{error}</p> : null}
       <Button type="submit" disabled={loading} className="text-sm">

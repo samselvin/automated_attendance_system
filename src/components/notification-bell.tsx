@@ -60,7 +60,7 @@ export function NotificationBell() {
         type="button"
         onClick={handleOpen}
         aria-label="Notifications"
-        className="relative rounded-full p-1.5 text-slate-500 hover:bg-slate-100"
+        className="relative rounded-full p-1.5 text-slate-600 hover:bg-slate-100"
       >
         <span className="text-lg" aria-hidden>
           🔔
@@ -76,14 +76,14 @@ export function NotificationBell() {
         <div className="absolute right-0 z-20 mt-2 max-h-96 w-80 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
           <div className="border-b border-slate-100 px-4 py-2 text-sm font-semibold text-slate-900">Notifications</div>
           {items.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-slate-400">No notifications yet.</p>
+            <p className="px-4 py-6 text-center text-sm text-slate-500">No notifications yet.</p>
           ) : (
             <ul className="divide-y divide-slate-100">
               {items.map((item) => (
                 <li key={item.id} className="px-4 py-3">
                   <p className="text-sm font-medium text-slate-900">{item.title}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">{item.message}</p>
-                  <p className="mt-1 text-[11px] text-slate-400">{new Date(item.createdAt).toLocaleString()}</p>
+                  <p className="mt-0.5 text-xs text-slate-600">{item.message}</p>
+                  <p className="mt-1 text-[11px] text-slate-500">{new Date(item.createdAt).toLocaleString()}</p>
                 </li>
               ))}
             </ul>

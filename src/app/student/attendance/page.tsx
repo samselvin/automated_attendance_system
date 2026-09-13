@@ -26,12 +26,12 @@ export default async function StudentAttendancePage() {
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500">Overall attendance</p>
+              <p className="text-xs text-slate-600">Overall attendance</p>
               <p className="text-2xl font-semibold text-slate-900">{overall.percentageRounded}%</p>
             </div>
             <Badge label={overall.level} variant={attendanceLevelVariant(overall.level)} />
           </div>
-          <p className="mt-2 text-xs text-slate-400">
+          <p className="mt-2 text-xs text-slate-500">
             {overall.attendedHours} of {overall.applicableHours} hours attended
           </p>
         </Card>
@@ -50,7 +50,7 @@ export default async function StudentAttendancePage() {
                 <li key={s.subjectOfferingId} className="flex items-center justify-between py-2 text-sm">
                   <div>
                     <p className="font-medium text-slate-900">{s.subjectName}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {s.attendedHours}/{s.applicableHours} hours
                     </p>
                   </div>
@@ -76,10 +76,10 @@ export default async function StudentAttendancePage() {
                     <p className="font-medium text-slate-900">{req.type}</p>
                     <Badge label={req.status} variant={statusVariant(req.status)} />
                   </div>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="mt-0.5 text-xs text-slate-600">
                     {new Date(req.fromDate).toLocaleDateString()} – {new Date(req.toDate).toLocaleDateString()}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-400">{req.reason}</p>
+                  <p className="mt-0.5 text-xs text-slate-500">{req.reason}</p>
                 </li>
               ))}
             </ul>

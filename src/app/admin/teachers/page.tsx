@@ -23,7 +23,7 @@ export default async function TeachersPage() {
           <Card className="!p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="border-b border-slate-100 text-xs text-slate-500">
+                <thead className="border-b border-slate-100 text-xs text-slate-600">
                   <tr>
                     <th className="px-4 py-2">Name</th>
                     <th className="px-4 py-2">Employee ID</th>

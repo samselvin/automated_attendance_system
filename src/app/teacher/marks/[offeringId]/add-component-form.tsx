@@ -49,9 +49,9 @@ export function AddComponentForm({ offeringId, existing }: { offeringId: string;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2 rounded-lg border border-dashed border-slate-300 p-3">
-      <p className="text-xs font-semibold text-slate-600">Add assessment component</p>
+      <p className="text-xs font-semibold text-slate-700">Add assessment component</p>
       <div className="grid grid-cols-2 gap-2">
-        <select value={groupKey} onChange={(e) => setGroupKey(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <select value={groupKey} onChange={(e) => setGroupKey(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           <option value="CAT">CAT</option>
           <option value="CLASS_TEST">Class Test</option>
           <option value="ASSIGNMENT">Assignment</option>
@@ -63,7 +63,7 @@ export function AddComponentForm({ offeringId, existing }: { offeringId: string;
           required
           value={maxMarks}
           onChange={(e) => setMaxMarks(e.target.value)}
-          className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
         />
       </div>
       <input
@@ -72,10 +72,10 @@ export function AddComponentForm({ offeringId, existing }: { offeringId: string;
         required
         value={label}
         onChange={(e) => setLabel(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       />
       {retestCandidates.length > 0 ? (
-        <select value={isRetestFor} onChange={(e) => setIsRetestFor(e.target.value)} className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <select value={isRetestFor} onChange={(e) => setIsRetestFor(e.target.value)} className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           <option value="">Not a retest</option>
           {retestCandidates.map((c) => (
             <option key={c.id} value={c.id}>

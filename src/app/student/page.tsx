@@ -52,7 +52,7 @@ export default async function StudentHome() {
             {greeting()}, {student.fullName.split(" ")[0]} 👋
           </p>
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-sm text-slate-600">Attendance:</span>
+            <span className="text-sm text-slate-700">Attendance:</span>
             <span className="text-sm font-semibold text-slate-900">{percentage.percentageRounded}%</span>
             <Badge label={percentage.level} variant={attendanceLevelVariant(percentage.level)} />
           </div>
@@ -61,14 +61,14 @@ export default async function StudentHome() {
         <Card>
           <p className="mb-2 text-sm font-semibold text-slate-900">Today&apos;s Classes</p>
           {todaySchedule.length === 0 ? (
-            <p className="text-sm text-slate-400">No classes scheduled today.</p>
+            <p className="text-sm text-slate-500">No classes scheduled today.</p>
           ) : (
             <ul className="divide-y divide-slate-100">
               {todaySchedule.map((entry) => (
                 <li key={entry.timetableEntryId} className="flex items-center justify-between py-2 text-sm">
                   <div>
                     <p className="font-medium text-slate-900">{entry.subjectName}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {entry.scheduledStart}–{entry.scheduledEnd} {entry.roomName ? `· ${entry.roomName}` : ""}
                     </p>
                   </div>
@@ -91,7 +91,7 @@ export default async function StudentHome() {
               {upcomingComponents.map((c) => (
                 <li key={c.id} className="py-2 text-sm">
                   <p className="font-medium text-slate-900">{c.label}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-600">
                     {c.subjectOffering.subject.name} · {c.conductedOn ? new Date(c.conductedOn).toLocaleDateString() : "TBA"}
                   </p>
                 </li>
@@ -107,17 +107,17 @@ export default async function StudentHome() {
               {upcomingEvents.map((e) => (
                 <li key={e.id} className="py-2 text-sm">
                   <p className="font-medium text-slate-900">{e.title}</p>
-                  <p className="text-xs text-slate-500">{e.startAt.toLocaleDateString()}</p>
+                  <p className="text-xs text-slate-600">{e.startAt.toLocaleDateString()}</p>
                 </li>
               ))}
             </ul>
-            <Link href="/student/events" className="mt-2 inline-block text-xs font-medium text-slate-600 underline">
+            <Link href="/student/events" className="mt-2 inline-block text-xs font-medium text-slate-700 underline">
               View all events
             </Link>
           </Card>
         ) : null}
 
-        <Link href="/student/attendance" className="block text-center text-sm font-medium text-slate-600 underline">
+        <Link href="/student/attendance" className="block text-center text-sm font-medium text-slate-700 underline">
           View full attendance & apply for leave/OD
         </Link>
       </main>

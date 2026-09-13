@@ -22,7 +22,7 @@ export default async function BellSchedulesPage() {
               <CardHeader title={bs.name} subtitle={`${bs.slots.length} slots`} />
               <div className="flex flex-wrap gap-1.5 text-xs">
                 {bs.slots.map((s) => (
-                  <span key={s.id} className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">
+                  <span key={s.id} className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-700">
                     {s.label} ({s.startTime}–{s.endTime})
                   </span>
                 ))}

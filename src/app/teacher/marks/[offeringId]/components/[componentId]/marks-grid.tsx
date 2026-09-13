@@ -56,7 +56,7 @@ export function MarksGrid({ componentId, maxMarks, roster }: { componentId: stri
             <li key={r.studentId} className="flex items-center justify-between gap-2 px-3 py-2">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-slate-900">{r.rollNumber}</p>
-                <p className="truncate text-xs text-slate-500">{r.fullName}</p>
+                <p className="truncate text-xs text-slate-600">{r.fullName}</p>
               </div>
               <div className="flex items-center gap-2">
                 <input
@@ -68,7 +68,7 @@ export function MarksGrid({ componentId, maxMarks, roster }: { componentId: stri
                   onChange={(e) => update(r.studentId, { marksObtained: e.target.value === "" ? null : Number(e.target.value) })}
                   className="w-16 rounded-lg border border-slate-300 px-2 py-1 text-sm disabled:bg-slate-100"
                 />
-                <label className="flex items-center gap-1 text-xs text-slate-500">
+                <label className="flex items-center gap-1 text-xs text-slate-600">
                   <input
                     type="checkbox"
                     checked={r.entryStatus === "ABSENT"}

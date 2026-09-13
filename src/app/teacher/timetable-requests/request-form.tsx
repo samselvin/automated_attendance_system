@@ -35,14 +35,14 @@ export function RequestForm({ classId }: { classId: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2 rounded-lg border border-dashed border-slate-300 p-3">
-      <p className="text-xs font-semibold text-slate-600">Request a timetable change</p>
+      <p className="text-xs font-semibold text-slate-700">Request a timetable change</p>
       <textarea
         required
         minLength={5}
         placeholder="What should change?"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       />
       <textarea
         required
@@ -50,14 +50,14 @@ export function RequestForm({ classId }: { classId: string }) {
         placeholder="Reason"
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       />
       <input
         type="date"
         required
         value={effectiveFrom}
         onChange={(e) => setEffectiveFrom(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       />
       {error ? <p className="text-xs text-red-600">{error}</p> : null}
       <Button type="submit" disabled={loading} className="w-full text-xs">

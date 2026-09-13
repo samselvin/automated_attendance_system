@@ -32,7 +32,7 @@ export default async function TeacherTimetableRequestsPage() {
         {classes[0] ? (
           <RequestForm classId={classes[0].id} />
         ) : (
-          <p className="text-xs text-slate-400">You have no classes to request changes for yet.</p>
+          <p className="text-xs text-slate-500">You have no classes to request changes for yet.</p>
         )}
 
         {requests.length === 0 ? (
@@ -43,8 +43,8 @@ export default async function TeacherTimetableRequestsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-slate-900">{req.description}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">{req.reason}</p>
-                  <p className="mt-0.5 text-xs text-slate-400">Effective {new Date(req.effectiveFrom).toLocaleDateString()}</p>
+                  <p className="mt-0.5 text-xs text-slate-600">{req.reason}</p>
+                  <p className="mt-0.5 text-xs text-slate-500">Effective {new Date(req.effectiveFrom).toLocaleDateString()}</p>
                 </div>
                 <Badge label={req.status} variant={statusVariant(req.status)} />
               </div>

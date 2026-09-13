@@ -114,19 +114,19 @@ export function ImportWizard() {
         <div className="grid grid-cols-4 gap-2 text-center text-sm">
           <div className="rounded-lg bg-slate-100 p-2">
             <p className="font-semibold">{job.totalRows}</p>
-            <p className="text-xs text-slate-500">Total</p>
+            <p className="text-xs text-slate-600">Total</p>
           </div>
           <div className="rounded-lg bg-emerald-50 p-2">
             <p className="font-semibold text-emerald-700">{job.validRows}</p>
-            <p className="text-xs text-slate-500">Valid</p>
+            <p className="text-xs text-slate-600">Valid</p>
           </div>
           <div className="rounded-lg bg-red-50 p-2">
             <p className="font-semibold text-red-700">{job.errorRows}</p>
-            <p className="text-xs text-slate-500">Errors</p>
+            <p className="text-xs text-slate-600">Errors</p>
           </div>
           <div className="rounded-lg bg-amber-50 p-2">
             <p className="font-semibold text-amber-700">{job.duplicateRows}</p>
-            <p className="text-xs text-slate-500">Duplicates</p>
+            <p className="text-xs text-slate-600">Duplicates</p>
           </div>
         </div>
         {errorRows.length > 0 ? (
@@ -156,13 +156,13 @@ export function ImportWizard() {
       <select
         value={entityType}
         onChange={(e) => setEntityType(e.target.value as "STUDENT" | "TEACHER" | "SUBJECT")}
-        className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       >
         <option value="STUDENT">Students</option>
         <option value="TEACHER">Teachers</option>
         <option value="SUBJECT">Subjects</option>
       </select>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-600">
         Paste CSV with a header row using exactly these column names: <span className="font-mono">{fields.join(", ")}</span>
       </p>
       <textarea

@@ -85,9 +85,9 @@ function SettingRow({
               <Badge label="Not used yet" variant="neutral" />
             </span>
           ) : null}
-          {isDefault ? <span className="ml-2 text-xs font-normal text-slate-400">(default)</span> : null}
+          {isDefault ? <span className="ml-2 text-xs font-normal text-slate-500">(default)</span> : null}
         </p>
-        <p className="mt-0.5 text-xs text-slate-500">{def.help}</p>
+        <p className="mt-0.5 text-xs text-slate-600">{def.help}</p>
       </div>
       <div className="flex flex-col items-end gap-1">
         <div className="flex items-center gap-2">
@@ -118,7 +118,7 @@ function SettingInput({
   value: unknown;
   onChange: (v: unknown) => void;
 }) {
-  const inputClass = "rounded-lg border border-slate-300 px-2 py-1.5 text-sm";
+  const inputClass = "rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20";
 
   switch (def.type) {
     case "number":

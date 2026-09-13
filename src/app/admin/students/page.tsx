@@ -45,7 +45,7 @@ export default async function StudentsPage({
       <TopBar title="Students" showNotifications={false} />
       <main className="flex-1 space-y-4 p-4 sm:p-6">
         <div className="flex justify-end">
-          <Link href="/admin/imports" className="text-xs font-medium text-slate-600 underline">
+          <Link href="/admin/imports" className="text-xs font-medium text-slate-700 underline">
             Bulk import via CSV →
           </Link>
         </div>
@@ -61,9 +61,9 @@ export default async function StudentsPage({
             name="search"
             defaultValue={search ?? ""}
             placeholder="Search by name or roll number"
-            className="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+            className="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
           />
-          <button type="submit" className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700">
+          <button type="submit" className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 font-medium text-slate-700">
             Search
           </button>
         </form>
@@ -73,7 +73,7 @@ export default async function StudentsPage({
           <Card className="!p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="border-b border-slate-100 text-xs text-slate-500">
+                <thead className="border-b border-slate-100 text-xs text-slate-600">
                   <tr>
                     <th className="px-4 py-2">Roll No</th>
                     <th className="px-4 py-2">Name</th>
@@ -104,7 +104,7 @@ export default async function StudentsPage({
           </Card>
         )}
         {totalPages > 1 ? (
-          <div className="flex items-center justify-between text-xs text-slate-500">
+          <div className="flex items-center justify-between text-xs text-slate-600">
             <span>
               Page {page} of {totalPages} · {total} student{total === 1 ? "" : "s"}
             </span>

@@ -15,7 +15,7 @@ export default async function ReportsPage() {
     <div className="flex min-h-full flex-col">
       <TopBar title="Reports & Export" showNotifications={false} />
       <main className="flex-1 space-y-4 p-4 sm:p-6">
-        <p className="text-xs text-slate-400 print:hidden">
+        <p className="text-xs text-slate-500 print:hidden">
           CSV export and print-friendly view are available below. Excel (.xlsx) and PDF export are not built yet.
         </p>
         <Card>

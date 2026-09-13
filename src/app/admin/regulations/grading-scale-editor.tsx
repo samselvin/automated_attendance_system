@@ -50,7 +50,7 @@ export function GradingScaleEditor({ regulationId, initial }: { regulationId: st
   return (
     <div className="space-y-2">
       <table className="w-full text-left text-xs">
-        <thead className="text-slate-500">
+        <thead className="text-slate-600">
           <tr>
             <th className="py-1">Grade</th>
             <th className="py-1">Points</th>

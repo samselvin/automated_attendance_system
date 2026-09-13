@@ -39,7 +39,7 @@ export function AdminMobileNav({ showCollegeWideAdminLinks = false }: { showColl
       <select
         value={pathname}
         onChange={(e) => router.push(e.target.value)}
-        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
       >
         {links.map(([href, label]) => (
           <option key={href} value={href}>

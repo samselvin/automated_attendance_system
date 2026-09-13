@@ -89,39 +89,39 @@ export function CreateStudentForm({
         </div>
       ) : null}
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        <input type="email" required placeholder="College email" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
-        <input required placeholder="Roll number" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
-        <input placeholder="Register number" value={registerNumber} onChange={(e) => setRegisterNumber(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
-        <input required placeholder="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
-        <input required placeholder="Batch (2025-2029)" value={batchLabel} onChange={(e) => setBatchLabel(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
-        <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <input type="email" required placeholder="College email" value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+        <input required placeholder="Roll number" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+        <input placeholder="Register number" value={registerNumber} onChange={(e) => setRegisterNumber(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+        <input required placeholder="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+        <input required placeholder="Batch (2025-2029)" value={batchLabel} onChange={(e) => setBatchLabel(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+        <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {departments.map((d) => (
             <option key={d.id} value={d.id}>{d.label}</option>
           ))}
         </select>
-        <select value={regulationId} onChange={(e) => setRegulationId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <select value={regulationId} onChange={(e) => setRegulationId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {regulations.map((r) => (
             <option key={r.id} value={r.id}>{r.label}</option>
           ))}
         </select>
-        <select value={classId} onChange={(e) => setClassId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <select value={classId} onChange={(e) => setClassId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {classes.map((c) => (
             <option key={c.id} value={c.id}>{c.label}</option>
           ))}
         </select>
-        <select value={semesterId} onChange={(e) => setSemesterId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <select value={semesterId} onChange={(e) => setSemesterId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {semesters.map((s) => (
             <option key={s.id} value={s.id}>{s.label}</option>
           ))}
         </select>
-        <input type="date" required value={effectiveFrom} onChange={(e) => setEffectiveFrom(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
-        <input required placeholder="Parent name" value={parentName} onChange={(e) => setParentName(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
-        <select value={parentRelationship} onChange={(e) => setParentRelationship(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <input type="date" required value={effectiveFrom} onChange={(e) => setEffectiveFrom(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+        <input required placeholder="Parent name" value={parentName} onChange={(e) => setParentName(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
+        <select value={parentRelationship} onChange={(e) => setParentRelationship(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           <option>Father</option>
           <option>Mother</option>
           <option>Guardian</option>
         </select>
-        <input required placeholder="Parent mobile" value={parentMobile} onChange={(e) => setParentMobile(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+        <input required placeholder="Parent mobile" value={parentMobile} onChange={(e) => setParentMobile(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         {error ? <p className="col-span-full text-xs text-red-600">{error}</p> : null}
         <Button type="submit" disabled={loading} className="col-span-full text-sm sm:col-span-1">
           {loading ? "Adding…" : "Add student"}

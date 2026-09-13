@@ -63,31 +63,31 @@ export function AddEntryForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-2 rounded-lg border border-dashed border-slate-300 p-3">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        <select value={subjectOfferingId} onChange={(e) => setSubjectOfferingId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <select value={subjectOfferingId} onChange={(e) => setSubjectOfferingId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {offerings.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
         </select>
         {timetableType === "WEEKDAY" ? (
-          <select value={weekday} onChange={(e) => setWeekday(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <select value={weekday} onChange={(e) => setWeekday(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             {WEEKDAYS.map((w) => <option key={w} value={w}>{w}</option>)}
           </select>
         ) : (
-          <input type="number" min={1} value={dayOrder} onChange={(e) => setDayOrder(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <input type="number" min={1} value={dayOrder} onChange={(e) => setDayOrder(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         )}
-        <select value={roomId} onChange={(e) => setRoomId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <select value={roomId} onChange={(e) => setRoomId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           <option value="">No room</option>
           {rooms.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
         </select>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="text-xs text-slate-500">Slot(s) — ctrl/cmd-click for multiple (lab spans)</label>
-          <select multiple value={slotIds} onChange={(e) => setSlotIds(Array.from(e.target.selectedOptions, (o) => o.value))} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <label className="text-xs text-slate-600">Slot(s) — ctrl/cmd-click for multiple (lab spans)</label>
+          <select multiple value={slotIds} onChange={(e) => setSlotIds(Array.from(e.target.selectedOptions, (o) => o.value))} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             {slots.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs text-slate-500">Teacher(s)</label>
-          <select multiple value={teacherIds} onChange={(e) => setTeacherIds(Array.from(e.target.selectedOptions, (o) => o.value))} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <label className="text-xs text-slate-600">Teacher(s)</label>
+          <select multiple value={teacherIds} onChange={(e) => setTeacherIds(Array.from(e.target.selectedOptions, (o) => o.value))} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             {teachers.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
           </select>
         </div>

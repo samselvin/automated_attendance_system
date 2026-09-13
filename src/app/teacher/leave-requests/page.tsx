@@ -24,7 +24,7 @@ export default async function TeacherLeaveRequestsPage() {
                   <p className="text-sm font-medium text-slate-900">
                     {req.student.fullName} ({req.student.rollNumber})
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-600">
                     {req.type} · {new Date(req.fromDate).toLocaleDateString()} – {new Date(req.toDate).toLocaleDateString()}
                   </p>
                   <p className="mt-1 text-sm text-slate-700">{req.reason}</p>

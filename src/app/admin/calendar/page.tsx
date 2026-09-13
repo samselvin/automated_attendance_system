@@ -21,7 +21,7 @@ export default async function CalendarPage() {
           <Card className="!p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="border-b border-slate-100 text-xs text-slate-500">
+                <thead className="border-b border-slate-100 text-xs text-slate-600">
                   <tr>
                     <th className="px-4 py-2">Date</th>
                     <th className="px-4 py-2">Type</th>
@@ -34,7 +34,7 @@ export default async function CalendarPage() {
                     <tr key={d.id}>
                       <td className="px-4 py-2 font-medium text-slate-900">{new Date(d.date).toLocaleDateString()}</td>
                       <td className="px-4 py-2 text-slate-700">{d.dayType}</td>
-                      <td className="px-4 py-2 text-slate-500">{d.description ?? "—"}</td>
+                      <td className="px-4 py-2 text-slate-600">{d.description ?? "—"}</td>
                       <td className="px-4 py-2">
                         <RemoveCalendarDayButton id={d.id} />
                       </td>

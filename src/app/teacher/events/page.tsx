@@ -22,7 +22,7 @@ export default async function TeacherEventsPage() {
     <div className="flex min-h-full flex-col">
       <TopBar title="Events" showNotifications={false} />
       <main className="flex-1 space-y-4 p-4 sm:p-6">
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-500">
           Only events for the department/class you&apos;ve been granted show as available audiences here. Create a draft,
           then Publish when it&apos;s ready — publishing notifies every student in the audience.
         </p>

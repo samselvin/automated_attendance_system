@@ -34,11 +34,11 @@ export default async function OfferingMarksPage({ params }: { params: Promise<{ 
                 <li key={c.id} className="flex items-center justify-between py-2 text-sm">
                   <div>
                     <p className="font-medium text-slate-900">{c.label}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {c.groupKey} · out of {Number(c.maxMarks)}
                     </p>
                   </div>
-                  <Link href={`/teacher/marks/${offeringId}/components/${c.id}`} className="text-xs font-medium text-slate-600 underline">
+                  <Link href={`/teacher/marks/${offeringId}/components/${c.id}`} className="text-xs font-medium text-slate-700 underline">
                     Enter marks
                   </Link>
                 </li>

@@ -40,7 +40,7 @@ export default async function TimetablesPage() {
                     <p className="text-sm font-medium text-slate-900">
                       {v.class.yearOfStudy}-{v.class.section} · {v.bellSchedule.name}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {v.timetableType} · effective {new Date(v.effectiveFrom).toLocaleDateString()}
                     </p>
                   </div>

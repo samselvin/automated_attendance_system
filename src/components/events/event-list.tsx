@@ -79,9 +79,9 @@ export function EventList({ events }: { events: EventRow[] }) {
           <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                {e.title} <span className="font-normal text-slate-400">· {e.type}</span>
+                {e.title} <span className="font-normal text-slate-500">· {e.type}</span>
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-600">
                 {audienceLabel(e)} · {new Date(e.startAt).toLocaleString()} – {new Date(e.endAt).toLocaleString()}
                 {e.venue ? ` · ${e.venue}` : ""}
               </p>

@@ -35,12 +35,12 @@ export default async function AcademicYearsPage() {
                 {year.semesters.map((s) => (
                   <span
                     key={s.id}
-                    className={`rounded-full px-2 py-0.5 text-xs ${s.isCurrent ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600"}`}
+                    className={`rounded-full px-2 py-0.5 text-xs ${s.isCurrent ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700"}`}
                   >
                     Sem {s.number} ({s.type})
                   </span>
                 ))}
-                {year.semesters.length === 0 ? <p className="text-xs text-slate-400">No semesters created yet.</p> : null}
+                {year.semesters.length === 0 ? <p className="text-xs text-slate-500">No semesters created yet.</p> : null}
               </div>
               <AddSemesterForm academicYearId={year.id} />
             </Card>

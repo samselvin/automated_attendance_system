@@ -74,7 +74,7 @@ export function AdminSidebar({ showCollegeWideAdminLinks = false }: { showColleg
     <nav className="hidden w-60 shrink-0 overflow-y-auto border-r border-slate-200 bg-white p-4 md:block">
       {sections.map((section) => (
         <div key={section.title} className="mb-5">
-          <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{section.title}</p>
+          <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">{section.title}</p>
           <ul className="space-y-0.5">
             {section.items.map((item) => {
               const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
@@ -82,8 +82,8 @@ export function AdminSidebar({ showCollegeWideAdminLinks = false }: { showColleg
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={`block rounded-lg px-2 py-1.5 text-sm ${
-                      active ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"
+                    className={`block rounded-lg px-2 py-1.5 text-sm font-medium transition-colors ${
+                      active ? "bg-indigo-600 text-white shadow-sm" : "text-slate-700 hover:bg-indigo-50 hover:text-indigo-700"
                     }`}
                   >
                     {item.label}

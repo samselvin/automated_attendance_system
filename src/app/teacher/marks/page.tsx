@@ -23,7 +23,7 @@ export default async function TeacherMarksPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-900">{offering.subject.name}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-600">
                       {offering.subject.code} · {offering.class ? `${offering.class.yearOfStudy}-${offering.class.section}` : "—"}
                     </p>
                   </div>

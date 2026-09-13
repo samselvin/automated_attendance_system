@@ -32,7 +32,7 @@ export function CredentialsForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
-        <label className="block text-xs font-medium text-slate-600" htmlFor="email">
+        <label className="block text-xs font-medium text-slate-700" htmlFor="email">
           College email
         </label>
         <input
@@ -43,7 +43,7 @@ export function CredentialsForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@psncet.ac.in"
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-500"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
         />
       </div>
       <PasswordInput id="password" label="Password" autoComplete="current-password" value={password} onChange={setPassword} />
@@ -51,7 +51,7 @@ export function CredentialsForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60"
+        className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:bg-indigo-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
       >
         {loading ? "Signing in…" : "Sign in"}
       </button>

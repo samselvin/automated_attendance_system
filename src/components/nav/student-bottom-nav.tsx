@@ -15,15 +15,15 @@ export function StudentBottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 z-10 grid grid-cols-5 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)]">
+    <nav className="sticky bottom-0 z-10 grid grid-cols-5 border-t border-slate-200 bg-white/95 shadow-[0_-2px_8px_rgba(15,23,42,0.05)] backdrop-blur pb-[env(safe-area-inset-bottom)]">
       {ITEMS.map((item) => {
         const active = item.href === "/student" ? pathname === "/student" : pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium ${
-              active ? "text-slate-900" : "text-slate-400"
+            className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
+              active ? "text-indigo-600" : "text-slate-500 hover:text-slate-700"
             }`}
           >
             <span aria-hidden className="text-lg leading-none">

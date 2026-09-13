@@ -20,8 +20,8 @@ export default async function AdminTimetableRequestsPage() {
             <Card key={req.id}>
               <p className="text-sm font-medium text-slate-900">{req.teacher.fullName}</p>
               <p className="mt-1 text-sm text-slate-700">{req.description}</p>
-              <p className="mt-0.5 text-xs text-slate-500">{req.reason}</p>
-              <p className="mt-0.5 text-xs text-slate-400">Effective {new Date(req.effectiveFrom).toLocaleDateString()}</p>
+              <p className="mt-0.5 text-xs text-slate-600">{req.reason}</p>
+              <p className="mt-0.5 text-xs text-slate-500">Effective {new Date(req.effectiveFrom).toLocaleDateString()}</p>
               <div className="mt-3">
                 <DecideGenericButtons endpoint={`/api/timetable-requests/${req.id}/decide`} />
               </div>

@@ -35,12 +35,12 @@ export function DeclareCalendarDayForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-slate-300 p-3">
       <div>
-        <label className="block text-xs font-medium text-slate-600">Date</label>
-        <input type="date" required value={date} onChange={(e) => setDate(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+        <label className="block text-xs font-medium text-slate-700">Date</label>
+        <input type="date" required value={date} onChange={(e) => setDate(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-600">Type</label>
-        <select value={dayType} onChange={(e) => setDayType(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+        <label className="block text-xs font-medium text-slate-700">Type</label>
+        <select value={dayType} onChange={(e) => setDayType(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           <option value="HOLIDAY_GOVT">Government Holiday</option>
           <option value="HOLIDAY_COLLEGE">College Holiday</option>
           <option value="HOLIDAY_EMERGENCY">Emergency Holiday</option>
@@ -50,8 +50,8 @@ export function DeclareCalendarDayForm() {
         </select>
       </div>
       <div className="flex-1">
-        <label className="block text-xs font-medium text-slate-600">Description</label>
-        <input value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+        <label className="block text-xs font-medium text-slate-700">Description</label>
+        <input value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
       </div>
       {error ? <p className="w-full text-xs text-red-600">{error}</p> : null}
       <Button type="submit" disabled={loading} className="text-sm">

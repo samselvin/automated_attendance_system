@@ -142,7 +142,7 @@ export function WeeklyAttendanceReport({
     <div className="space-y-3 print:space-y-2">
       <div className="flex flex-wrap items-end gap-2 print:hidden">
         {classes ? (
-          <select value={classId} onChange={(e) => setClassId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <select value={classId} onChange={(e) => setClassId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             {classes.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.label}
@@ -150,11 +150,11 @@ export function WeeklyAttendanceReport({
             ))}
           </select>
         ) : (
-          <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm text-slate-600">{fixedClassLabel}</span>
+          <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-sm text-slate-700">{fixedClassLabel}</span>
         )}
-        <label className="flex flex-col text-xs text-slate-500">
+        <label className="flex flex-col text-xs text-slate-600">
           Week starting (Monday)
-          <input type="date" value={weekStart} onChange={(e) => setWeekStart(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm" />
+          <input type="date" value={weekStart} onChange={(e) => setWeekStart(e.target.value)} className="mt-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
         </label>
         <Button onClick={handleGenerate} disabled={loading || !classId} className="text-sm">
           {loading ? "Generating…" : "Generate"}
@@ -199,7 +199,7 @@ export function WeeklyAttendanceReport({
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] border-collapse text-left text-xs">
-              <thead className="border-b border-slate-300 text-[11px] text-slate-600">
+              <thead className="border-b border-slate-300 text-[11px] text-slate-700">
                 <tr>
                   <th rowSpan={2} className="border border-slate-200 px-1.5 py-1">
                     S.No
