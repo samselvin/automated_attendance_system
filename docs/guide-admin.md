@@ -103,7 +103,16 @@ cutoff, and a few other college-wide rules can be changed any time from
   under "Reserved (not yet wired into behavior)" are seeded but not
   currently read by any business logic — they're shown (and labelled)
   rather than hidden, but changing one won't change how the app behaves
-  yet.
+  yet. A **Danger zone** at the bottom has a **Restart everything**
+  button, also college-wide Admin only: it permanently deletes every
+  department's classes, students, teachers, subjects, offerings,
+  timetables, attendance, marks, leave requests, events and imports,
+  back to an empty system ready for a fresh first-time setup. Admin
+  accounts, audit logs and these Settings are kept (deleting Departments
+  itself isn't possible from here — it would take every Admin's role
+  with it — so remove or rename the old one manually if you no longer
+  want it). It requires typing an exact confirmation phrase and is
+  logged as `SYSTEM_RESET`; it cannot be undone.
 
 ## A department-scoped Admin
 

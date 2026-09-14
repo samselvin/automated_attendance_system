@@ -5,6 +5,7 @@ import { TopBar } from "@/components/top-bar";
 import { listSystemSettings } from "@/server/services/settings.service";
 import { ALL_SETTINGS_SCHEMA } from "@/lib/settings-schema";
 import { SettingsForm } from "./settings-form";
+import { SystemResetButton } from "./system-reset-button";
 
 export default async function SettingsPage() {
   const session = await requireRolePage("ADMIN");
@@ -27,6 +28,7 @@ export default async function SettingsPage() {
           audit-logged.
         </p>
         <SettingsForm settings={settings} />
+        <SystemResetButton />
       </main>
     </div>
   );
