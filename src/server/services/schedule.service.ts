@@ -40,7 +40,7 @@ export async function getTeacherScheduleForDate(session: Session, dateStr: strin
       },
     },
     include: {
-      timetableVersion: { include: { class: true } },
+      timetableVersion: { include: { class: { include: { department: true } } } },
       subjectOffering: { include: { subject: true } },
       slots: { include: { bellScheduleSlot: true }, orderBy: { bellScheduleSlot: { sortOrder: "asc" } } },
       teachers: true,
@@ -85,7 +85,11 @@ export async function getTeacherScheduleForDate(session: Session, dateStr: strin
 
     result.push({
       timetableEntryId: entry.id,
-      className: `${entry.timetableVersion.class.yearOfStudy}-${entry.timetableVersion.class.section}`,
+      // Section 5: a teacher can hold subjects in more than one department,
+      // where "2-A" alone is ambiguous — always qualify it with the code.
+      className: `${entry.timetableVersion.class.department.code} ${entry.timetableVersion.class.yearOfStudy}-${entry.timetableVersion.class.section}`,
+      yearOfStudy: entry.timetableVersion.class.yearOfStudy,
+      departmentCode: entry.timetableVersion.class.department.code,
       groupName: entry.studentGroup?.name ?? null,
       subjectName: entry.subjectOffering.subject.name,
       roomName: entry.room?.name ?? null,

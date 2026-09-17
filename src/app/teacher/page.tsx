@@ -12,6 +12,10 @@ import { collegeDateString, collegeTimeString } from "@/lib/time";
 import { getSetting } from "@/lib/settings";
 import { prisma } from "@/lib/prisma";
 
+function ordinal(year: number) {
+  return ["", "1st", "2nd", "3rd", "4th"][year] ?? `${year}th`;
+}
+
 export default async function TeacherHome() {
   const session = await requireRolePage("TEACHER");
   const teacherId = session.user.teacherId!;
@@ -26,6 +30,21 @@ export default async function TeacherHome() {
   ]);
 
   const missingCount = schedule.filter((s) => s.attendanceStatus !== "HELD" && s.scheduledStart && now > s.scheduledStart).length;
+
+  // Section 5: a teacher may hold subjects across several years and even
+  // several departments, so lead with "which years today, and what in each"
+  // before the chronological list.
+  const byYear = new Map<string, { label: string; subjects: string[] }>();
+  for (const entry of schedule) {
+    const key = `${entry.departmentCode} ${entry.yearOfStudy}`;
+    const group = byYear.get(key) ?? {
+      label: `${entry.departmentCode} ${ordinal(entry.yearOfStudy)} year`,
+      subjects: [],
+    };
+    if (!group.subjects.includes(entry.subjectName)) group.subjects.push(entry.subjectName);
+    byYear.set(key, group);
+  }
+  const yearGroups = [...byYear.values()];
 
   let advisorSummary: { classId: string; className: string; studentCount: number; pendingLeave: number }[] = [];
   if (advisorClassIds.length > 0) {
@@ -55,6 +74,20 @@ export default async function TeacherHome() {
 
         <Card>
           <CardHeader title="Today's schedule" subtitle={`Daily cutoff: ${cutoff}`} />
+          {yearGroups.length > 0 ? (
+            <div className="mb-3 rounded-lg bg-indigo-50/70 px-3 py-2">
+              <p className="text-xs font-medium text-indigo-900">
+                Today you have classes in {yearGroups.map((g) => g.label).join(" and ")}
+              </p>
+              <ul className="mt-1 space-y-0.5">
+                {yearGroups.map((g) => (
+                  <li key={g.label} className="text-xs text-indigo-800">
+                    <span className="font-medium">{g.label}:</span> {g.subjects.join(", ")}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {schedule.length === 0 ? (
             <EmptyState title="No classes today" />
           ) : (

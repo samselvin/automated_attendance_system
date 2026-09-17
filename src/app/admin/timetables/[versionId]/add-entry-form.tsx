@@ -9,6 +9,11 @@ interface Option {
   label: string;
 }
 
+interface OfferingOption extends Option {
+  teacherIds: string[];
+  teacherNames: string[];
+}
+
 const WEEKDAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
 export function AddEntryForm({
@@ -21,7 +26,7 @@ export function AddEntryForm({
 }: {
   timetableVersionId: string;
   timetableType: "WEEKDAY" | "DAY_ORDER";
-  offerings: Option[];
+  offerings: OfferingOption[];
   slots: Option[];
   teachers: Option[];
   rooms: Option[];
@@ -31,10 +36,20 @@ export function AddEntryForm({
   const [weekday, setWeekday] = useState(WEEKDAYS[0]);
   const [dayOrder, setDayOrder] = useState("1");
   const [slotIds, setSlotIds] = useState<string[]>(slots[0] ? [slots[0].id] : []);
-  const [teacherIds, setTeacherIds] = useState<string[]>(teachers[0] ? [teachers[0].id] : []);
+  // Section 7: the staff who already teach this subject are the answer
+  // almost every time, so picking a subject fills them in rather than
+  // making the admin find the same names again in a list of everyone.
+  const [teacherIds, setTeacherIds] = useState<string[]>(offerings[0]?.teacherIds ?? []);
   const [roomId, setRoomId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const selectedOffering = offerings.find((o) => o.id === subjectOfferingId);
+
+  function handleOfferingChange(id: string) {
+    setSubjectOfferingId(id);
+    setTeacherIds(offerings.find((o) => o.id === id)?.teacherIds ?? []);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -63,7 +78,7 @@ export function AddEntryForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-2 rounded-lg border border-dashed border-slate-300 p-3">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        <select value={subjectOfferingId} onChange={(e) => setSubjectOfferingId(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
+        <select value={subjectOfferingId} onChange={(e) => handleOfferingChange(e.target.value)} className="rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
           {offerings.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
         </select>
         {timetableType === "WEEKDAY" ? (
@@ -86,7 +101,12 @@ export function AddEntryForm({
           </select>
         </div>
         <div>
-          <label className="text-xs text-slate-600">Teacher(s)</label>
+          <label className="text-xs text-slate-600">
+            Teacher(s)
+            {selectedOffering?.teacherNames.length ? (
+              <span className="text-indigo-700"> — {selectedOffering.teacherNames.join(", ")} from this subject</span>
+            ) : null}
+          </label>
           <select multiple value={teacherIds} onChange={(e) => setTeacherIds(Array.from(e.target.selectedOptions, (o) => o.value))} className="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
             {teachers.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
           </select>

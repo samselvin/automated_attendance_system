@@ -42,7 +42,12 @@ export default async function TimetableVersionPage({ params }: { params: Promise
           <AddEntryForm
             timetableVersionId={version.id}
             timetableType={version.timetableType}
-            offerings={offerings.map((o) => ({ id: o.id, label: o.subject.name }))}
+            offerings={offerings.map((o) => ({
+              id: o.id,
+              label: o.subject.name,
+              teacherIds: o.teachers.map((t) => t.teacherId),
+              teacherNames: o.teachers.map((t) => t.teacher.fullName),
+            }))}
             slots={periodSlots.map((s) => ({ id: s.id, label: `${s.label} (${s.startTime}-${s.endTime})` }))}
             teachers={teachers.map((t) => ({ id: t.id, label: t.fullName }))}
             rooms={rooms.map((r) => ({ id: r.id, label: r.name }))}

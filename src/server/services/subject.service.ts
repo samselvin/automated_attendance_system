@@ -108,7 +108,7 @@ export async function listSubjectOfferings(
     if (!session.user.teacherId) throw new ForbiddenError("Not authorized");
     return prisma.subjectOffering.findMany({
       where: { ...rest, teachers: { some: { teacherId: session.user.teacherId } } },
-      include: { subject: true, teachers: { include: { teacher: true } }, class: true },
+      include: { subject: true, teachers: { include: { teacher: true } }, class: { include: { department: true } } },
       orderBy: { createdAt: "desc" },
     });
   }
@@ -118,7 +118,7 @@ export async function listSubjectOfferings(
     const departmentFilter = scope === "ALL" ? {} : { subject: { departmentId: { in: scope } } };
     return prisma.subjectOffering.findMany({
       where: { ...rest, ...departmentFilter, ...(teacherId ? { teachers: { some: { teacherId } } } : {}) },
-      include: { subject: true, teachers: { include: { teacher: true } }, class: true },
+      include: { subject: true, teachers: { include: { teacher: true } }, class: { include: { department: true } } },
       orderBy: { createdAt: "desc" },
     });
   }

@@ -24,7 +24,10 @@ export default async function TeacherMarksPage() {
                   <div>
                     <p className="text-sm font-medium text-slate-900">{offering.subject.name}</p>
                     <p className="text-xs text-slate-600">
-                      {offering.subject.code} · {offering.class ? `${offering.class.yearOfStudy}-${offering.class.section}` : "—"}
+                      {offering.subject.code} ·{" "}
+                      {offering.class
+                        ? `${offering.class.department.code} ${offering.class.yearOfStudy}-${offering.class.section}`
+                        : "—"}
                     </p>
                   </div>
                   <div className="flex gap-1">
